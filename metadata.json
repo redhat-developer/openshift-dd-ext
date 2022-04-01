@@ -1,0 +1,12 @@
+{
+  "name": "openshift-ext",
+  "provider": "RedHat Inc.",
+  "icon": "openshift.svg",
+  "ui": {
+    "dashboard-tab": {
+      "title": "OpenShift",
+      "root": "/ui",
+      "src": "index.html"
+    }
+  }
+}
