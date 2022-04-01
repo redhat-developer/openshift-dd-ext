@@ -1,6 +1,6 @@
 {
-  "name": "openshift-ext",
-  "provider": "RedHat Inc.",
+  "name": "OpenShift",
+  "provider": "Red Hat, Inc.",
   "icon": "openshift.svg",
   "ui": {
     "dashboard-tab": {

@@ -17,7 +17,7 @@ export function App() {
       height="100vh"
     >
       <Button variant="contained" onClick={sayHello}>
-        Click me!!!!!!!!!!!!!!!!!!!!!!!
+        Click me!
       </Button>
     </Box>
   );

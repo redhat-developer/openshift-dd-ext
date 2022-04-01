@@ -5,28 +5,32 @@ COPY client/package.json /app/client/package.json
 COPY client/yarn.lock /app/client/yarn.lock
 ARG TARGETARCH
 RUN yarn config set cache-folder /usr/local/share/.cache/yarn-${TARGETARCH}
+RUN yarn config set network-timeout 120000
+
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn-${TARGETARCH} yarn
 # install
 COPY client /app/client
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn-${TARGETARCH} yarn build
 
 FROM debian:bullseye-slim
-LABEL org.opencontainers.image.title="ui-extension" \
-    org.opencontainers.image.description="Your Desktop Extension Description" \
-    org.opencontainers.image.vendor="Docker Inc." \
+LABEL org.opencontainers.image.title="OpenShift" \
+    org.opencontainers.image.description="Deploy Docker images to OpenShift" \
+    org.opencontainers.image.vendor="Red Hat Inc." \
     com.docker.desktop.extension.api.version=">= 0.2.0" \
-    com.docker.desktop.extension.icon="https://www.docker.com/sites/default/files/d8/2019-07/Moby-logo.png"
+    com.docker.desktop.extension.icon="https://github.com/redhat-developer/vscode-openshift-tools/blob/main/images/openshift_extension.png?raw=true"
 
-COPY --from=client-builder /app/client/dist ui
 RUN apt update && apt install curl unzip -y
 WORKDIR /tools/linux
-RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.10.6/openshift-client-linux-4.10.6.tar.gz -O
-RUN tar -xvf openshift-client-linux-4.10.6.tar.gz
+ENV OC_VERSION=4.10.6
+RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz -O
+RUN tar -xvf openshift-client-linux-${OC_VERSION}.tar.gz
 WORKDIR /tools/windows
-RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.10.6/openshift-client-windows-4.10.6.zip -O
-RUN unzip openshift-client-windows-4.10.6.zip
+RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}/openshift-client-windows-${OC_VERSION}.zip -O
+RUN unzip openshift-client-windows-${OC_VERSION}.zip
 WORKDIR /tools/mac
-RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.10.6/openshift-install-mac-4.10.6.tar.gz -O
-RUN tar -xvf openshift-install-mac-4.10.6.tar.gz
+RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}/openshift-client-mac-arm64-${OC_VERSION}.tar.gz -O
+RUN tar -xvf openshift-client-mac-arm64-${OC_VERSION}.tar.gz  
+WORKDIR /
 COPY openshift.svg .
 COPY metadata.json .
+COPY --from=client-builder /app/client/dist ui
