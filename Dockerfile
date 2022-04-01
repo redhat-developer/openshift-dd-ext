@@ -18,5 +18,5 @@ LABEL org.opencontainers.image.title="ui-extension" \
     com.docker.desktop.extension.icon="https://www.docker.com/sites/default/files/d8/2019-07/Moby-logo.png"
 
 COPY --from=client-builder /app/client/dist ui
-COPY docker.svg .
+COPY openshift.svg .
 COPY metadata.json .
