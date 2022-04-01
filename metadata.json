@@ -8,5 +8,26 @@
       "root": "/ui",
       "src": "index.html"
     }
+  },
+  "host": {
+    "binaries": [
+      {
+        "darwin": [
+          {
+            "path": "/tools/mac/oc"
+          }
+        ],
+        "windows": [
+          {
+            "path": "/tools/windows/oc.exe"
+          }
+        ],
+        "linux": [
+          {
+            "path": "/tools/linux/oc"
+          }
+        ]
+      }
+    ]
   }
 }

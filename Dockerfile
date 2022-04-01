@@ -18,5 +18,15 @@ LABEL org.opencontainers.image.title="ui-extension" \
     com.docker.desktop.extension.icon="https://www.docker.com/sites/default/files/d8/2019-07/Moby-logo.png"
 
 COPY --from=client-builder /app/client/dist ui
+RUN apt update && apt install curl unzip -y
+WORKDIR /tools/linux
+RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.10.6/openshift-client-linux-4.10.6.tar.gz -O
+RUN tar -xvf openshift-client-linux-4.10.6.tar.gz
+WORKDIR /tools/windows
+RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.10.6/openshift-client-windows-4.10.6.zip -O
+RUN unzip openshift-client-windows-4.10.6.zip
+WORKDIR /tools/mac
+RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.10.6/openshift-install-mac-4.10.6.tar.gz -O
+RUN tar -xvf openshift-install-mac-4.10.6.tar.gz
 COPY openshift.svg .
 COPY metadata.json .
