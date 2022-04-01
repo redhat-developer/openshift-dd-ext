@@ -23,7 +23,7 @@ install-extension: build-extension ## Install the extension
 update-extension: build-extension ## Update the extension
 	docker extension update $(IMAGE):$(TAG)
 
-uninstall-extension: build-extension ## Install the extension
+uninstall-extension: ## Uninstall the extension
 	docker extension uninstall $(IMAGE):$(TAG)
 
 prepare-buildx: ## Create buildx builder for multi-arch build, if not exists
