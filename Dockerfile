@@ -20,16 +20,14 @@ LABEL org.opencontainers.image.title="OpenShift" \
     com.docker.desktop.extension.icon="https://github.com/redhat-developer/vscode-openshift-tools/blob/main/images/openshift_extension.png?raw=true"
 
 RUN apt update && apt install curl unzip -y
-WORKDIR /tools/linux
 ENV OC_VERSION=4.10.6
-RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}/openshift-client-linux-${OC_VERSION}.tar.gz -O
-RUN tar -xvf openshift-client-linux-${OC_VERSION}.tar.gz
+ENV OC_DOWNLOAD_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}
+WORKDIR /tools/linux
+RUN curl ${OC_DOWNLOAD_URL}/openshift-client-linux.tar.gz | tar -xz
 WORKDIR /tools/windows
-RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}/openshift-client-windows-${OC_VERSION}.zip -O
-RUN unzip openshift-client-windows-${OC_VERSION}.zip
+RUN curl ${OC_DOWNLOAD_URL}/openshift-client-windows.zip -o client.zip && unzip client.zip
 WORKDIR /tools/mac
-RUN curl https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}/openshift-client-mac-arm64-${OC_VERSION}.tar.gz -O
-RUN tar -xvf openshift-client-mac-arm64-${OC_VERSION}.tar.gz  
+RUN curl ${OC_DOWNLOAD_URL}/openshift-client-mac.tar.gz | tar -xz
 WORKDIR /
 COPY openshift.svg .
 COPY metadata.json .
