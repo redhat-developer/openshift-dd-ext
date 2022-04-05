@@ -5,6 +5,7 @@ import { VariableSizeList as ImageList } from 'react-window';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Box, Button } from '@mui/material';
+import { getLocalImages } from './utils/DockerUtils';
 
 const { useState, useEffect } = React;
 const ddClient = createDockerDesktopClient();
@@ -33,9 +34,8 @@ export function DockerImageList() {
 
 
   async function loadImages(): Promise<void> {
-    const data = (await ddClient.docker.listImages()) as DockerImage[];
-    const items = data.map(i => i.RepoTags).flat().filter(i => i != null && '<none>:<none>' !== i).flat().sort();
-    const options = items.map(d => ({
+    const localImages = await getLocalImages();
+    const options = localImages.map(d => ({
       value: d,
       label: d
     } as SelectOption));
