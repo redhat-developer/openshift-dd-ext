@@ -1,5 +1,7 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button} from '@mui/material';
+
 import { createDockerDesktopClient } from '@docker/extension-api-client';
+import { DockerImageList } from './imageList';
 
 export function App() {
   const ddClient = createDockerDesktopClient();
@@ -11,14 +13,12 @@ export function App() {
   return (
     <Box
       display="flex"
+      flexDirection="column"
       flexGrow={1}
-      justifyContent="center"
-      alignItems="center"
       height="100vh"
+      width="100%"
     >
-      <Button variant="contained" onClick={sayHello}>
-        Click me!
-      </Button>
+        <DockerImageList />
     </Box>
   );
 }

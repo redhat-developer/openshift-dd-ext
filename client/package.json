@@ -7,20 +7,24 @@
     "build": "react-scripts build"
   },
   "dependencies": {
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
     "@docker/docker-mui-theme": "^0.0.4",
     "@docker/extension-api-client": "^0.2.2",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.4.1",
     "@mui/material": "^5.4.1",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
+    "react-virtualized-auto-sizer": "^1.0.6",
+    "react-window": "^1.8.6",
     "typescript": "^4.1.2"
   },
   "devDependencies": {
-    "@docker/extension-api-client-types": "^0.2.2"
+    "@docker/extension-api-client-types": "^0.2.2",
+    "@types/react-virtualized-auto-sizer": "^1.0.1",
+    "@types/react-window": "^1.8.5"
   }
 }
