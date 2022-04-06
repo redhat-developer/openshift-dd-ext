@@ -7,7 +7,7 @@ import { ImageSelector } from './imageSelector';
 
 export function App() {
   const useCombo = true;
-  const shadow = 2;
+  const shadow = 0;
 
   const Selector = (): JSX.Element => {
     return useCombo ? (
