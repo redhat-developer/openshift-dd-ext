@@ -1,5 +1,7 @@
+import { Box, Typography } from '@mui/material';
+import logo from './images/logo.png';
+
 export default function Header() {
-  const logo = 'images/logo.png';
 
   // TODO use styles. 
   const iconContainer = {
@@ -15,11 +17,11 @@ export default function Header() {
   }
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <div style={iconContainer}>
+    <Box style={{ textAlign: 'center' }}>
+      <Box style={iconContainer}>
         <img src={logo} style={logoStyle} />
-        <h1 >Deploy to OpenShift</h1>
-      </div>
-    </div >
+      </Box>
+      <Typography variant='h4' component='div'>Deploy to OpenShift</Typography>
+    </Box >
   );
 }
