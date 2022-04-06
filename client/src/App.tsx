@@ -1,22 +1,10 @@
-import { Box, Button } from '@mui/material';
-import { useState } from 'react';
+import { Box } from '@mui/material';
 import Header from './Header';
 
-import { DockerImageList } from './imageList';
 import { ImageSelector } from './imageSelector';
 
 export function App() {
-  const useCombo = true;
   const shadow = 0;
-
-  const Selector = (): JSX.Element => {
-    return useCombo ? (
-      <ImageSelector />
-    ) : (
-      <DockerImageList />
-    );
-  };
-
   return (
     <Box
       display="flex"
@@ -28,7 +16,7 @@ export function App() {
       boxShadow={shadow}
     >
       <Header />
-      <Selector />
+      <ImageSelector />
     </Box>
   );
 }
