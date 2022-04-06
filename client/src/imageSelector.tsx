@@ -6,12 +6,17 @@ import { getLocalImages } from "./utils/DockerUtils";
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { useTheme } from '@mui/material';
 
+interface ImageSelectorProps {
+  onDeployClick?: (imageName: string) => void;
+}
+
 interface ImageOption {
   readonly value: string;
   readonly label: string;
 }
 
-export function ImageSelector(props: any) {
+export function ImageSelector(props?: ImageSelectorProps) {
+  const onDeployClick =  props?.onDeployClick;
   const [loading, setLoading] = useState(true);
   const [defaultImage, setDefaultImage] = useState('');
   const [images, setImages] = useState<ImageOption[]>([]);
@@ -40,8 +45,8 @@ export function ImageSelector(props: any) {
   }
 
   const deploy = (): void => {
-    if (selectedImage) {
-      createDockerDesktopClient().desktopUI.toast.success(`Deployed ${selectedImage}!`);
+    if (selectedImage && onDeployClick) {
+      onDeployClick(selectedImage);
     }
   }
 
