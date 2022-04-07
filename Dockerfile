@@ -17,10 +17,9 @@ LABEL org.opencontainers.image.title="OpenShift" \
     org.opencontainers.image.description="Deploy Docker images to OpenShift" \
     org.opencontainers.image.vendor="Red Hat Inc." \
     com.docker.desktop.extension.api.version=">= 0.2.0" \
-    com.docker.desktop.extension.icon="https://github.com/redhat-developer/vscode-openshift-tools/blob/main/images/openshift_extension.png?raw=true"
-
+    com.docker.desktop.extension.icon="https://raw.githubusercontent.com/redhat-developer/vscode-openshift-tools/main/images/openshift_extension.png"
 RUN apt update && apt install curl unzip -y
-ENV OC_VERSION=4.10.6
+ENV OC_VERSION=4.10.9
 ENV OC_DOWNLOAD_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}
 WORKDIR /tools/linux
 RUN curl ${OC_DOWNLOAD_URL}/openshift-client-linux.tar.gz | tar -xz
