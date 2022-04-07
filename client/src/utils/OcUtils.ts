@@ -1,5 +1,7 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
+import { KubeContext, UnknownKubeContext } from "../models/KubeContext";
 import { isMacOS, isWindows } from "./PlatformUtils";
+import * as yaml from 'js-yaml';
 
 const ocPathMac = 'oc' // 'tools/mac/oc';
 const ocPathWin = 'oc.exe' //'tools/windows/oc.exe';
@@ -75,3 +77,48 @@ export function getAppName(imageName: string) {
   //return last segment
   return segments[segments.length - 1];
 }
+
+export async function loadKubeContext(): Promise<KubeContext> {
+  const kubeConfig = await readKubeConfig();
+  if (kubeConfig) {
+    const currentContext = kubeConfig["current-context"];
+    if (currentContext) {
+      const parts = currentContext.split('/');
+      const project = parts[0];
+      const contextName = parts[1];
+      //Getting the username will be tricky since this happens:
+      // oc get user
+      // Error from server (Forbidden): users.user.openshift.io is forbidden: User "100210525024987209584" cannot list users.user.openshift.io at the cluster scope: no RBAC policy matched
+      const user = parts[2];
+      const clusters = kubeConfig["clusters"];
+      if (clusters) {
+        const clusterUrl = clusters.find((c: { name?: string; }) => contextName === c.name)?.cluster?.server;
+        return {
+          project: project,
+          name: contextName,
+          clusterUrl: clusterUrl,
+          user: user
+        };
+      }
+    };
+  }
+  return UnknownKubeContext;
+}
+
+async function readKubeConfig(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["config", "view"]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        reject(result.stderr);
+      }
+      const config = yaml.load(result.stdout);
+      console.log(`kube config:\n ${JSON.stringify(config)}`);
+      resolve(config);
+    }).catch((e) => {
+      reject(e);
+    });
+  });
+}
+
+
