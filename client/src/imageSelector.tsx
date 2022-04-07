@@ -92,7 +92,7 @@ export function ImageSelector(props?: ImageSelectorProps) {
           })}
         />
       </div>
-      <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy {selectedImage} </Button>
+      <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
     </Box >
   );
 }
