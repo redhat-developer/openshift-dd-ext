@@ -57,7 +57,7 @@ export function ImageSelector(props?: ImageSelectorProps) {
   }
   const dockerTheme = useTheme();
   return (
-    <Box margin="15px 0px 15px 0px" width="70%" display='flex' flexDirection="row" alignContent='space-between' >
+    <Box margin="15px 0px 15px 0px" width="70%" display="flex" flexDirection="row">
       <div style={{ flex: '1 1 auto' }}>
         <Select
           noOptionsMessage={() => "No images found"}
