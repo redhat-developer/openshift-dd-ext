@@ -16,7 +16,7 @@ interface ImageOption {
 }
 
 export function ImageSelector(props?: ImageSelectorProps) {
-  const onDeployClick =  props?.onDeployClick;
+  const onDeployClick = props?.onDeployClick;
   const [loading, setLoading] = useState(true);
   const [defaultImage, setDefaultImage] = useState('');
   const [images, setImages] = useState<ImageOption[]>([]);
@@ -57,8 +57,8 @@ export function ImageSelector(props?: ImageSelectorProps) {
   }
   const dockerTheme = useTheme();
   return (
-    <div className='flexbox-container'>
-      <Box margin="15px 0px 15px 0px" width="70%">
+    <Box margin="15px 0px 15px 0px" width="70%" display='flex' flexDirection="row" alignContent='space-between' >
+      <div style={{ flex: '1 1 auto' }}>
         <Select
           noOptionsMessage={() => "No images found"}
           placeholder="Select an image to deploy"
@@ -91,8 +91,8 @@ export function ImageSelector(props?: ImageSelectorProps) {
             },
           })}
         />
-      </Box>
-      <Button variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy {selectedImage} </Button>
-    </div>
+      </div>
+      <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy {selectedImage} </Button>
+    </Box >
   );
 }
