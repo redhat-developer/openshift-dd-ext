@@ -14,13 +14,15 @@ export function App() {
   const [deployResponse, setDeployResponse] = useState("");
 
   async function deploy(imageName: string) {
-    let output = '';
+    let output = `Deploying ${imageName}...`
+    setDeployResponse(output);
     try {
       output = await deployImage(imageName);
       setDeployResponse(output);
-    } catch (e) {
+    } catch (err) {
       toast.error(`Failed to deploy ${imageName}`);
-      output = output + '\n' + (e as any).stderr;
+      const e = err as any;
+      output = output + '\n' + (e.stderr ? e.stderr : e);
       setDeployResponse(output);
       return;
     }
