@@ -17,7 +17,7 @@ export default function Header() {
   }
 
   return (
-    <Box style={{ textAlign: 'center' }}>
+    <Box style={{ textAlign: 'center', marginBottom: '20px' }}>
       <Box style={iconContainer}>
         <img src={logo} style={logoStyle} />
       </Box>

@@ -1,6 +1,7 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Box } from '@mui/material';
 import { useState } from 'react';
+import { CurrentContext } from './contextSelector';
 import { DeploymentOutput } from './DeploymentOutput';
 import Header from './Header';
 
@@ -68,6 +69,7 @@ export function App() {
       boxShadow={shadow}
     >
       <Header />
+      <CurrentContext />
       <ImageSelector onDeployClick={deploy} />
       <DeploymentOutput deployResponse={deployResponse} />
     </Box>
