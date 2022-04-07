@@ -1,13 +1,21 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
+import { IDockerImage } from "../models/IDockerImage";
+
+
 
 const ddClient = createDockerDesktopClient();
 /**
- * @returns Returns a promise that resolves to a list of local docker images, sorted by name.
+ * @returns Returns a promise that resolves to a map of local docker images.
  */
-export async function getLocalImages(): Promise<string[]> {
-  const data = (await ddClient.docker.listImages()) as any;
-  const images = data.map((i: { RepoTags: string[] | null }) => i.RepoTags)
-    .flat()
-    .filter((i: string | null) => i != null && '<none>:<none>' !== i).flat().sort();
-  return images as string[];
+export async function getLocalImages(): Promise<Map<string, IDockerImage>> {
+  const images = (await ddClient.docker.listImages()) as IDockerImage[];
+  const imageMap = new Map<string, IDockerImage>();
+  for (const image of images) {
+    const tags = image.RepoTags?.filter(tag => tag != null && '<none>:<none>' !== tag);
+    if (tags && tags.length > 0) {
+      const imageName = tags[0];
+      imageMap.set(imageName, image);
+    }
+  }
+  return imageMap;
 }

@@ -5,9 +5,10 @@ import Select, { SingleValue, StylesConfig } from "react-select";
 import { getLocalImages } from "./utils/DockerUtils";
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { useTheme } from '@mui/material';
+import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
 
 interface ImageSelectorProps {
-  onDeployClick?: (imageName: string) => void;
+  onDeployClick?: (image: ISelectedImage) => void;
 }
 
 interface ImageOption {
@@ -18,18 +19,21 @@ interface ImageOption {
 export function ImageSelector(props?: ImageSelectorProps) {
   const onDeployClick = props?.onDeployClick;
   const [loading, setLoading] = useState(true);
-  const [defaultImage, setDefaultImage] = useState('');
-  const [images, setImages] = useState<ImageOption[]>([]);
-  const [selectedImage, setSelectedImage] = useState('');
+  const [images, setImages] = useState<Map<string, IDockerImage>>(new Map());
+  const [imageOptions, setImageOptions] = useState<ImageOption[]>([]);
+  const [selectedImage, setSelectedImage] = useState<ISelectedImage | null>(null);
 
   async function loadImages(): Promise<void> {
     const localImages = await getLocalImages();
-    const options = localImages.map(d => ({
+    const sortedKeys = Array.from(localImages.keys()).sort();
+
+    const options = sortedKeys.map(d => ({
       value: d,
       label: d
     } as ImageOption));
     setLoading(false);
-    setImages(options);
+    setImages(localImages);
+    setImageOptions(options);
     return;
   }
 
@@ -39,20 +43,20 @@ export function ImageSelector(props?: ImageSelectorProps) {
     }
   }, [loading]);
 
-  const onImageSelection = (image: string | undefined): void => {
-    console.log(`Selected image: ${image}`);
-    setSelectedImage(image ? image : '');
-  }
-
   const deploy = (): void => {
     if (selectedImage && onDeployClick) {
       onDeployClick(selectedImage);
     }
   }
 
-  function handleSelection(image: SingleValue<ImageOption>) {
-    if (onImageSelection) {
-      onImageSelection(image?.value);
+  function handleSelection(imageOption: SingleValue<ImageOption>) {
+    console.log(`Selected image: ${imageOption?.value}`);
+    const name = imageOption?.value;
+    if (name) {
+      const image = images.get(name);
+      if (image) {
+        setSelectedImage({ name, image });
+      }
     }
   }
   const dockerTheme = useTheme();
@@ -64,9 +68,9 @@ export function ImageSelector(props?: ImageSelectorProps) {
           placeholder="Select an image to deploy"
           isClearable
           isSearchable
-          options={images}
+          options={imageOptions}
           onChange={handleSelection}
-          value={images.filter(image => image.label === selectedImage)}
+          value={imageOptions.filter(image => image.value === selectedImage?.name)}
           theme={(theme) => ({
             ...theme,
             colors: {

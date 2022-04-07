@@ -75,7 +75,7 @@ export function CurrentContext() {
           </>
         }
         title={"Current context: " + currentContext.name}
-        subheader={<p><b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a> <br /><b>Username</b> {currentContext.user}<br /><b>Project:</b> {currentContext.project}<br /></p>}
+        subheader={<p><b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a> <br /><b>User:</b> {currentContext.user}<br /><b>Project:</b> {currentContext.project}<br /></p>}
       />
     </Card >
   );

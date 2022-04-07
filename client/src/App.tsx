@@ -6,6 +6,7 @@ import { DeploymentOutput } from './DeploymentOutput';
 import Header from './Header';
 
 import { ImageSelector } from './imageSelector';
+import { ISelectedImage } from './models/IDockerImage';
 import { deployImage, exposeService, getAppName, getProjectRoute } from './utils/OcUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
 
@@ -14,7 +15,8 @@ export function App() {
 
   const [deployResponse, setDeployResponse] = useState("");
 
-  async function deploy(imageName: string) {
+  async function deploy(selectedImage: ISelectedImage) {
+    const imageName = selectedImage.name;
     let output = `Deploying ${imageName}...`
     setDeployResponse(output);
     try {
@@ -27,26 +29,33 @@ export function App() {
       setDeployResponse(output);
       return;
     }
-
-    const appName = getAppName(imageName);
-    try {
-      output = output + '\n' + await exposeService(appName);
-      setDeployResponse(output);
-    } catch (e) {
-      toast.error(`Failed to expose '${appName}' for  ${imageName}`);
-      output = output + '\n' + (e as any).stderr;
-      setDeployResponse(output);
-    }
-    const route = await getProjectRoute(appName);
-    if (route) {
-      toast.success(`Deployed ${imageName} to ${route}.`);
-      //TODO wait for the route to be accessible before opening it?
-      //TODO or rather display a link?
-      openInBrowser(route);
-      output = output + '\nApplication is exposed as: ' + route;
-      setDeployResponse(output);
+    const hasExposedPorts = selectedImage.image.ExposedPorts && Object.keys(selectedImage.image.ExposedPorts).length > 0;
+    if (hasExposedPorts) {
+      //Nothing to expose
+      const appName = getAppName(imageName);
+      try {
+        output = output + '\n' + await exposeService(appName);
+        setDeployResponse(output);
+      } catch (e) {
+        toast.error(`Failed to expose '${appName}' for  ${imageName}`);
+        output = output + '\n' + (e as any).stderr;
+        setDeployResponse(output);
+      }
+      const route = await getProjectRoute(appName);
+      if (route) {
+        toast.success(`Deployed ${imageName} to ${route}.`);
+        //TODO wait for the route to be accessible before opening it?
+        //TODO or rather display a link?
+        openInBrowser(route);
+        output = output + '\nApplication is exposed as: ' + route;
+        setDeployResponse(output);
+      } else {
+        toast.warning(`Deployed ${imageName} but no route was created.`);
+      }
     } else {
-      toast.warning(`Deployed ${imageName} but no route was created.`);
+      output = output + '\nNo exposed ports found, so no route is created.';
+      setDeployResponse(output);
+      toast.success(`Deployed ${imageName} but no route was created.`);
     }
 
   }
