@@ -84,20 +84,16 @@ export async function loadKubeContext(): Promise<KubeContext> {
     const currentContext = kubeConfig["current-context"];
     if (currentContext) {
       const context = kubeConfig.contexts.find((c: any) => c.name === currentContext);
-      console.log(context);
       const project = context.context.namespace ? context.context.namespace : 'not set';
       const contextName = currentContext;
       //Getting the username will be tricky since this happens:
       // oc get user
       // Error from server (Forbidden): users.user.openshift.io is forbidden: User "100210525024987209584" cannot list users.user.openshift.io at the cluster scope: no RBAC policy matched
-      // another option is oc whami
+      // another option is oc whoami
       const userItem = kubeConfig.users.find((u: any) => u.name === context.context.user);
-      console.log(kubeConfig.users, userItem);
       const clusters = kubeConfig.clusters;
       if (clusters) {
-        console.log(clusters);
         const cluster = clusters.find((c: { name?: string, cluster: any }) => c.name === context.context.cluster)?.cluster;
-        console.log(cluster);
         return {
           project: project,
           name: contextName,
