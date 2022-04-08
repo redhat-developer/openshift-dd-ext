@@ -1,7 +1,6 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { KubeContext, UnknownKubeContext } from "../models/KubeContext";
 import { isMacOS, isWindows } from "./PlatformUtils";
-import * as yaml from 'js-yaml';
 
 const ocPathMac = 'oc' // 'tools/mac/oc';
 const ocPathWin = 'oc.exe' //'tools/windows/oc.exe';
