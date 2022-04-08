@@ -108,12 +108,12 @@ export async function loadKubeContext(): Promise<KubeContext> {
 
 async function readKubeConfig(): Promise<any> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["config", "view"]).then(result => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["config", "view", "-o", "json"]).then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
       }
-      const config = yaml.load(result.stdout);
+      const config = JSON.parse(result.stdout);
       console.log(`kube config:\n ${JSON.stringify(config)}`);
       resolve(config);
     }).catch((e) => {
