@@ -105,7 +105,7 @@ export async function loadKubeContext(): Promise<KubeContext> {
   return UnknownKubeContext;
 }
 
-async function readKubeConfig(): Promise<any> {
+export async function readKubeConfig(): Promise<any> {
   return new Promise((resolve, reject) => {
     ddClient.extension?.host?.cli.exec(ocPath, ["config", "view", "-o", "json"]).then(result => {
       if (result.stderr) {
@@ -121,4 +121,66 @@ async function readKubeConfig(): Promise<any> {
   });
 }
 
+export async function loadProjectNames(): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["get", "namespaces", "-o", "json"]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        reject(result.stderr);
+      }
+      const projects = JSON.parse(result.stdout);
+      console.log(`projects/namespaces:\n ${JSON.stringify(projects.items)}`);
+      resolve(projects.items.map((project: any) => project.metadata.name));
+    }).catch((e) => {
+      reject(e);
+    });
+  });
+}
+
+export async function setCurrentContextProject(projectName: string) {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["project", projectName]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        reject(result.stderr);
+      }
+      const projects = JSON.parse(result.stdout);
+      console.log(`current project set to ${projectName}`);
+      resolve(projectName);
+    }).catch((e) => {
+      reject(e);
+    });
+  });
+}
+
+export async function isOpenshift() {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["api-versions"]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        reject(result.stderr);
+      }
+      const apiFound = result.stdout.includes("apps.openshift.io/v1");
+      console.log(`The cluster is${apiFound ? " " : " not "}OpenShift`);
+      resolve(apiFound);
+    }).catch((e) => {
+      reject(e);
+    });
+  });
+}
+
+export async function setContext(contextName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["config", "set-context", contextName]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        reject(result.stderr);
+      }
+      console.log(`The current-context set to ${contextName}.`);
+      resolve();
+    }).catch((e) => {
+      reject(e);
+    });
+  });
+}
 
