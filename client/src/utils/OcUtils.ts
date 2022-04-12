@@ -169,9 +169,9 @@ export async function isOpenshift() {
   });
 }
 
-export async function setContext(contextName: string): Promise<void> {
+export async function setCurrentContext(contextName: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["config", "set-context", contextName]).then(result => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["config", "use-context", contextName]).then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
