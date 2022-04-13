@@ -77,30 +77,46 @@ export function getAppName(imageName: string) {
   return segments[segments.length - 1];
 }
 
+function loadUserName(userItem: any) {
+  const segments = userItem?.name?.split('/');
+  if (segments?.length && segments.length > 1) {
+    return segments[0];
+  }
+  return segments ? segments : 'Not set';
+}
+
+export function loadContextUiData(kubeConfig: any, contextName: string): KubeContext {
+  const context = kubeConfig.contexts.find((c: any) => c.name === contextName);
+  const project = context.context.namespace ? context.context.namespace : 'not set';
+  //Getting the username will be tricky since this happens:
+  // oc get user
+  // Error from server (Forbidden): users.user.openshift.io is forbidden: User "100210525024987209584" cannot list users.user.openshift.io at the cluster scope: no RBAC policy matched
+  // another option is oc whoami
+  const userItem = kubeConfig.users.find((u: any) => u.name === context.context.user);
+  const user = loadUserName(userItem);
+  const clusters = kubeConfig.clusters;
+  if (clusters) {
+    const cluster = clusters.find((c: { name?: string, cluster: any }) => c.name === context.context.cluster)?.cluster;
+    if (cluster) {
+      return {
+        project: project,
+        name: contextName,
+        clusterUrl: cluster.server,
+        user
+      };
+    }
+  }
+  return UnknownKubeContext;
+
+}
+
 export async function loadKubeContext(): Promise<KubeContext> {
   const kubeConfig = await readKubeConfig();
   if (kubeConfig) {
     const currentContext = kubeConfig["current-context"];
     if (currentContext) {
-      const context = kubeConfig.contexts.find((c: any) => c.name === currentContext);
-      const project = context.context.namespace ? context.context.namespace : 'not set';
-      const contextName = currentContext;
-      //Getting the username will be tricky since this happens:
-      // oc get user
-      // Error from server (Forbidden): users.user.openshift.io is forbidden: User "100210525024987209584" cannot list users.user.openshift.io at the cluster scope: no RBAC policy matched
-      // another option is oc whoami
-      const userItem = kubeConfig.users.find((u: any) => u.name === context.context.user);
-      const clusters = kubeConfig.clusters;
-      if (clusters) {
-        const cluster = clusters.find((c: { name?: string, cluster: any }) => c.name === context.context.cluster)?.cluster;
-        return {
-          project: project,
-          name: contextName,
-          clusterUrl: cluster.server,
-          user: userItem.name
-        };
-      }
-    };
+      return loadContextUiData(kubeConfig, currentContext);
+    }
   }
   return UnknownKubeContext;
 }
@@ -123,7 +139,7 @@ export async function readKubeConfig(): Promise<any> {
 
 export async function loadProjectNames(): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["get", "namespaces", "-o", "json"]).then(result => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["get", "projects", "-o", "json"]).then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -132,7 +148,7 @@ export async function loadProjectNames(): Promise<string[]> {
       console.log(`projects/namespaces:\n ${JSON.stringify(projects.items)}`);
       resolve(projects.items.map((project: any) => project.metadata.name));
     }).catch((e) => {
-      reject(e);
+      reject(e.stderr);
     });
   });
 }
@@ -144,11 +160,10 @@ export async function setCurrentContextProject(projectName: string) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
       }
-      const projects = JSON.parse(result.stdout);
       console.log(`current project set to ${projectName}`);
       resolve(projectName);
     }).catch((e) => {
-      reject(e);
+      reject(e.stderr);
     });
   });
 }
@@ -164,7 +179,7 @@ export async function isOpenshift() {
       console.log(`The cluster is${apiFound ? " " : " not "}OpenShift`);
       resolve(apiFound);
     }).catch((e) => {
-      reject(e);
+      reject(e.stderr);
     });
   });
 }
@@ -179,7 +194,7 @@ export async function setCurrentContext(contextName: string): Promise<void> {
       console.log(`The current-context set to ${contextName}.`);
       resolve();
     }).catch((e) => {
-      reject(e);
+      reject(e.stderr);
     });
   });
 }
