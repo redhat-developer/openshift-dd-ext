@@ -8,7 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Autocomplete from '@mui/material/Autocomplete';
 import validator from 'validator';
-import { login } from '../utils/OcUtils';
+import { loadServerUrls, login } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { PropaneSharp } from '@mui/icons-material';
 
@@ -27,6 +27,7 @@ export function LoginDialog(props: LoginDialogProps) {
   const [cluster, setCluster] = React.useState<FieldState>({ value: '', helperText: '' });
   const [username, setUsername] = React.useState<FieldState>({ value: '', helperText: '' });;
   const [password, setPassword] = React.useState<FieldState>({ value: '', helperText: '' });;
+  const [servers, setServers] = React.useState([] as string[]);
 
   const validateUrl = (value: string): string => {
     return validator.isURL(value.trim()) ? '' : 'Invalid Cluster URL';
@@ -65,6 +66,9 @@ export function LoginDialog(props: LoginDialogProps) {
 
   const handleOpen = () => {
     setOpen(true);
+    loadServerUrls().then((urls) => {
+      setServers(urls);
+    })
   }
 
   const handleClose = () => {
@@ -83,10 +87,12 @@ export function LoginDialog(props: LoginDialogProps) {
           </DialogContentText>
           <Autocomplete
             freeSolo
-            options={[]}
+            options={servers}
             renderInput={(params) => (
               <TextField {...params}
-                autoFocus margin="dense"
+                sx={{ minHeight: "5rem" }}
+                autoFocus
+                focused={true}
                 id="cluster"
                 label="Cluster URL"
                 type="text"
@@ -99,8 +105,7 @@ export function LoginDialog(props: LoginDialogProps) {
             )}
           />
           <TextField
-            autoFocus
-            margin="dense"
+            sx={{ minHeight: "5rem" }}
             id="userName"
             label="User name"
             type="text"
@@ -112,8 +117,7 @@ export function LoginDialog(props: LoginDialogProps) {
             error={username.helperText !== ""}
           />
           <TextField
-            autoFocus
-            margin="dense"
+            sx={{ minHeight: "5rem" }}
             id="password"
             label="Password"
             type="password"

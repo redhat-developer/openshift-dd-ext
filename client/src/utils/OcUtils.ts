@@ -153,6 +153,12 @@ export async function loadProjectNames(): Promise<string[]> {
   });
 }
 
+export async function loadServerUrls(): Promise<string[]> {
+  const kc = await readKubeConfig();
+  const clusters: string[] = kc.clusters.map((item: any) => item.cluster.server);
+  return [... new Set(clusters)];
+}
+
 export async function setCurrentContextProject(projectName: string) {
   return new Promise((resolve, reject) => {
     ddClient.extension?.host?.cli.exec(ocPath, ["project", projectName]).then(result => {
