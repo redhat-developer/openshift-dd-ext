@@ -101,7 +101,6 @@ export function LoginDialog(props: LoginDialogProps) {
               <TextField {...params}
                 sx={{ minHeight: "5rem" }}
                 autoFocus
-                focused={true}
                 id="cluster"
                 label="Cluster URL"
                 type="text"
