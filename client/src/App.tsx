@@ -10,12 +10,7 @@ import { ISelectedImage } from './models/IDockerImage';
 import { deployImage, exposeService, getAppName, getProjectRoute } from './utils/OcUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
 
-import GlobalStyles from '@mui/material/GlobalStyles';
-import darkScrollbar from '@mui/material/darkScrollbar';
-
-
 export function App() {
-
 
   const [deployResponse, setDeployResponse] = useState("");
 
@@ -73,7 +68,6 @@ export function App() {
   // TODO: handle deployment failures (project doesn't exist, service already exists, etc.)
   return (
     <>
-      <GlobalStyles styles={{ ...darkScrollbar() }} />
       <Box
         display="flex"
         flexDirection="column"
