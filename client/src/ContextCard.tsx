@@ -62,6 +62,10 @@ export function CurrentContext() {
     loadContext();
   }
 
+  const onLogin = () => {
+    loadContext();
+  }
+
   useEffect(() => {
     if (loading) {
       loadContext();
@@ -115,7 +119,7 @@ export function CurrentContext() {
         />
         <CardContent hidden={!expanded}><Typography variant='body1'><b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a> <br /><b>User:</b> {currentContext.user}<br /><b>Project:</b> {currentContext.project} <IconButton size="small" onClick={handleChangeProject}> <EditRounded /> </IconButton></Typography></CardContent>
       </Card >
-      <LoginDialog install={installDialog} />
+      <LoginDialog install={installDialog} onLogin={onLogin} />
       <ChangeContext install={installChangeContextDialog} onContextChange={onProjectChange} />
       <ChangeProject install={installChangeProjectDialog} onProjectChange={onProjectChange} />
     </>

@@ -199,3 +199,18 @@ export async function setCurrentContext(contextName: string): Promise<void> {
   });
 }
 
+export async function login(cluster: string, username: string, password: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["login", cluster, '-u', username, '-p', password]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        reject(result.stderr);
+      }
+      console.log(`logged into cluster ${cluster}  with username ${username}.`);
+      resolve();
+    }).catch((e) => {
+      reject(e.stderr);
+    });
+  });
+}
+
