@@ -20,13 +20,16 @@ interface LoginDialogProps {
 interface FieldState {
   value: string;
   helperText: string;
+  error: boolean;
 }
+
+const DEFAULT_STATUS = { value: '', helperText: '', error: false };
 
 export function LoginDialog(props: LoginDialogProps) {
   const [open, setOpen] = React.useState(false);
-  const [cluster, setCluster] = React.useState<FieldState>({ value: '', helperText: '' });
-  const [username, setUsername] = React.useState<FieldState>({ value: '', helperText: '' });;
-  const [password, setPassword] = React.useState<FieldState>({ value: '', helperText: '' });;
+  const [cluster, setCluster] = React.useState<FieldState>(DEFAULT_STATUS);
+  const [username, setUsername] = React.useState<FieldState>(DEFAULT_STATUS);;
+  const [password, setPassword] = React.useState<FieldState>(DEFAULT_STATUS);;
   const [servers, setServers] = React.useState([] as string[]);
 
   const validateUrl = (value: string): string => {
@@ -46,9 +49,11 @@ export function LoginDialog(props: LoginDialogProps) {
   }
 
   const handleOnChange = (validator: (value: string) => string, setter: React.Dispatch<React.SetStateAction<FieldState>>, event: any): void => {
+    const helperText = validator(event.target.value);
     setter({
       value: event.target.value,
-      helperText: validator(event.target.value)
+      helperText,
+      error: helperText.length > 0
     });
   }
 
@@ -73,6 +78,9 @@ export function LoginDialog(props: LoginDialogProps) {
 
   const handleClose = () => {
     setOpen(false);
+    setCluster(DEFAULT_STATUS);
+    setUsername(DEFAULT_STATUS);
+    setPassword(DEFAULT_STATUS);
   }
 
   props.install(handleOpen);
@@ -102,7 +110,7 @@ export function LoginDialog(props: LoginDialogProps) {
                 onChange={handleOnChange.bind(undefined, validateUrl, setCluster)}
                 value={cluster.value}
                 helperText={cluster.helperText}
-                error={cluster.helperText !== ""} />
+                error={cluster.error} />
             )}
           />
           <TextField
@@ -115,7 +123,7 @@ export function LoginDialog(props: LoginDialogProps) {
             onChange={handleOnChange.bind(undefined, validateUsername, setUsername)}
             value={username.value}
             helperText={username.helperText}
-            error={username.helperText !== ""}
+            error={username.error}
           />
           <TextField
             sx={{ minHeight: "5rem" }}
@@ -127,7 +135,7 @@ export function LoginDialog(props: LoginDialogProps) {
             onChange={handleOnChange.bind(undefined, validatePassword, setPassword)}
             value={password.value}
             helperText={password.helperText}
-            error={password.helperText !== ""}
+            error={password.error}
           />
         </DialogContent>
         <DialogActions>
