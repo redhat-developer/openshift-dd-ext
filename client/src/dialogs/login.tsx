@@ -30,15 +30,15 @@ export function LoginDialog(props: LoginDialogProps) {
   const [servers, setServers] = React.useState([] as string[]);
 
   const validateUrl = (value: string): string => {
-    return validator.isURL(value.trim()) ? '' : 'Invalid Cluster URL';
+    return value && validator.isURL(value.trim()) ? '' : 'Invalid Cluster URL';
   }
 
   const validateUsername = (value: string): string => {
-    return value.trim().length > 0 ? '' : 'Username is empty';
+    return value?.trim().length > 0 ? '' : 'Username is empty';
   }
 
   const validatePassword = (value: string): string => {
-    return value.trim().length > 0 ? '' : 'Password is empty';
+    return value?.trim().length > 0 ? '' : 'Password is empty';
   }
 
   const isValid = (): boolean => {
@@ -88,6 +88,7 @@ export function LoginDialog(props: LoginDialogProps) {
           <Autocomplete
             freeSolo
             options={servers}
+            onChange={(event, value) => handleOnChange(validateUrl, setCluster, { target: { value } })}
             renderInput={(params) => (
               <TextField {...params}
                 sx={{ minHeight: "5rem" }}
