@@ -57,11 +57,16 @@ export function ChangeContext(props: LoginDialogProps) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleChange}>
+      <Dialog open={open} onClose={handleChange} fullWidth={true}>
         <DialogTitle>Change Context</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Select Context from the list below
+          <DialogContentText paddingBottom="16px">
+            <Typography
+              component="div"
+              variant="body1"
+              color="text.primary">
+              Select Context from the list below
+            </Typography>
           </DialogContentText>
           {(loading) && (
             <Box width="100%" component="div" display="flex" alignContent="center" justifyContent="center" padding="20px">
@@ -69,7 +74,7 @@ export function ChangeContext(props: LoginDialogProps) {
             </Box>
           )}
           {(!loading) && (
-            <List sx={{ width: '100%' }}>
+            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
               {contexts.map((item: { name: string }, index: number) => {
                 const contextUiData = loadContextUiData(kubeConfig, item.name);
                 return (contextUiData !== UnknownKubeContext) && (
@@ -77,28 +82,28 @@ export function ChangeContext(props: LoginDialogProps) {
                     <ListItemButton alignItems="flex-start" selected={item.name === selectedContext} onClick={() => setSelectedContext(item.name)} key={item.name}>
                       <ListItemText
                         primary={
-                          <React.Fragment>
-                            <Typography
-                              sx={{
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis"
-                              }}>
-                              {item.name}
-                            </Typography>
-                          </React.Fragment>
+                          <Typography
+                            sx={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              padding: "2px"
+                            }}
+                            variant="h6">
+                            {item.name}
+                          </Typography>
                         }
                         secondary={
                           <React.Fragment>
                             <Typography
                               sx={{ display: 'inline' }}
-                              component="span"
-                              variant="body1"
+                              component="div"
+                              variant="body2"
                               color="text.primary"
                             >
-                              <b>Cluster:</b> {contextUiData.clusterUrl}<br />
-                              <b>Username:</b> {contextUiData.user}<br />
-                              <b>Project:</b> {contextUiData.project}<br />
+                              <div><b>Cluster:</b> {contextUiData.clusterUrl}</div>
+                              <div><b>Username:</b> {contextUiData.user}</div>
+                              <div><b>Project:</b> {contextUiData.project}</div>
                             </Typography>
                           </React.Fragment>
                         }

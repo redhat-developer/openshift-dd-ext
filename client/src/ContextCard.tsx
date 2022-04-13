@@ -52,7 +52,6 @@ export function CurrentContext() {
     showChangeProjecDialog = showDialogHandler;
   }
 
-
   async function loadContext(): Promise<void> {
     const context = await loadKubeContext();
     setCurrentContext(context);
@@ -77,7 +76,6 @@ export function CurrentContext() {
       openInBrowser(currentContext.clusterUrl);
     }
   }
-
 
   const styles = {
     link: {
@@ -117,7 +115,16 @@ export function CurrentContext() {
           }
           subheader="Current context"
         />
-        <CardContent hidden={!expanded}><Typography variant='body1'><b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a> <br /><b>User:</b> {currentContext.user}<br /><b>Project:</b> {currentContext.project} <IconButton size="small" onClick={handleChangeProject}> <EditRounded /> </IconButton></Typography></CardContent>
+        <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
+          <Typography variant='body1'>
+            <b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a> <br />
+            <b>User:</b> {currentContext.user}<br />
+            <b>Project:</b> {currentContext.project}
+            <IconButton size="small" onClick={handleChangeProject}>
+              <EditRounded />
+            </IconButton>
+          </Typography>
+        </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
       <ChangeContext install={installChangeContextDialog} onContextChange={onProjectChange} />

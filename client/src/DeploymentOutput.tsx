@@ -14,7 +14,6 @@ export function DeploymentOutput(props: DeploymentOutputProps) {
       flexDirection="column"
       flexGrow={1}
       width="100%"
-      paddingTop="10px"
     >
       <textarea style={{ height: '50%' }} value={output} readOnly />
     </Box>

@@ -64,11 +64,16 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth={true}>
         <DialogTitle>Change Project</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Select Project from the list below
+          <DialogContentText paddingBottom="16px">
+            <Typography
+              component="div"
+              variant="body1"
+              color="text.primary">
+              Select Project from the list below
+            </Typography>
           </DialogContentText>
           {(loading) && (
             <Box width="100%" component="div" display="flex" alignContent="center" justifyContent="center" padding="20px">

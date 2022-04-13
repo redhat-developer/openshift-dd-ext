@@ -10,6 +10,10 @@ import { ISelectedImage } from './models/IDockerImage';
 import { deployImage, exposeService, getAppName, getProjectRoute } from './utils/OcUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
 
+import GlobalStyles from '@mui/material/GlobalStyles';
+import darkScrollbar from '@mui/material/darkScrollbar';
+
+
 export function App() {
 
 
@@ -68,19 +72,22 @@ export function App() {
   // TODO: handle image no available from openshift cluster (either push or display instructions)
   // TODO: handle deployment failures (project doesn't exist, service already exists, etc.)
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      flexGrow={1}
-      height="97vh"
-      width="100%"
-      padding="10px"
-      boxShadow={shadow}
-    >
-      <Header />
-      <CurrentContext />
-      <ImageSelector onDeployClick={deploy} />
-      <DeploymentOutput deployResponse={deployResponse} />
-    </Box>
+    <>
+      <GlobalStyles styles={{ ...darkScrollbar() }} />
+      <Box
+        display="flex"
+        flexDirection="column"
+        flexGrow={1}
+        height="97vh"
+        width="100%"
+        padding="10px"
+        boxShadow={shadow}
+      >
+        <Header />
+        <CurrentContext />
+        <ImageSelector onDeployClick={deploy} />
+        <DeploymentOutput deployResponse={deployResponse} />
+      </Box>
+    </>
   );
 }
