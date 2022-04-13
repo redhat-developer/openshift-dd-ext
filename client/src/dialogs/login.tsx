@@ -60,13 +60,13 @@ export function LoginDialog(props: LoginDialogProps) {
   const ddClient = createDockerDesktopClient();
 
   const handleLogin = () => {
-    setOpen(false);
     login(cluster.value.split('://')[1], username.value, password.value).then(() => {
       ddClient.desktopUI.toast.success(`Sucessfully logged into cluster ${cluster.value}`);
       props.onLogin();
     }).catch((error) => {
       ddClient.desktopUI.toast.error(error);
     });
+    handleClose();
   };
 
   const handleOpen = () => {
