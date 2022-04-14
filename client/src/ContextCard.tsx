@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
 import { loadKubeContext } from './utils/OcUtils';
-import { Button, Card, CardHeader, IconButton } from "@mui/material";
+import { Card, CardHeader, CardContent, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandLessRounded from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
-import { CardContent, Menu, MenuItem, Typography } from '@mui/material';
-import { KubeContext, UnknownKubeContext } from './models/KubeContext';
+import { UnknownKubeContext } from './models/KubeContext';
 import { openInBrowser } from './utils/UIUtils';
 import { LoginDialog } from './dialogs/login';
 import { ChangeContext } from './dialogs/changeContext';
-import { EditRounded, NearMe } from '@mui/icons-material';
+import { EditRounded } from '@mui/icons-material';
 import { LoginRounded } from '@mui/icons-material';
 import { ChangeProject } from './dialogs/changeProject';
 
@@ -116,14 +115,17 @@ export function CurrentContext() {
           subheader="Current context"
         />
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
-          <Typography variant='body1'>
-            <b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a> <br />
-            <b>User:</b> {currentContext.user}<br />
-            <b>Project:</b> {currentContext.project}
-            <IconButton size="small" onClick={handleChangeProject}>
-              <EditRounded />
-            </IconButton>
-          </Typography>
+          <List dense>
+            <ListItem disablePadding>
+              <ListItemText primary={<span>Server: <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></span>}/>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemText primary={<span>User: {currentContext.user}</span>}/>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemText primary={<span>Project: {currentContext.project} <IconButton size="small" onClick={handleChangeProject}><EditRounded /></IconButton></span>}/>
+            </ListItem>
+          </List>
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />

@@ -3,7 +3,7 @@ import logo from './images/logo.png';
 
 export default function Header() {
 
-  // TODO use styles. 
+  // TODO use styles.
   const iconContainer = {
     height: 60,
     marginBottom: '3em',
@@ -21,7 +21,7 @@ export default function Header() {
       <Box style={iconContainer}>
         <img src={logo} style={logoStyle} />
       </Box>
-      <Typography variant='h4' component='div'>Deploy to OpenShift</Typography>
+      <Typography variant='h5' component='div'>Deploy to OpenShift</Typography>
     </Box >
   );
 }
