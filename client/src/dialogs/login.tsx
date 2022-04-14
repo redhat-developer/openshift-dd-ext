@@ -10,8 +10,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import validator from 'validator';
 import { loadServerUrls, login } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { PropaneSharp } from '@mui/icons-material';
-
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
   onLogin: () => void;
@@ -90,7 +88,7 @@ export function LoginDialog(props: LoginDialogProps) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>OpenShift Login</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText style= {{ marginBottom: '15px' }}>
             Provide OpenShift cluster URL, username and password to login.
           </DialogContentText>
           <Autocomplete
@@ -99,13 +97,19 @@ export function LoginDialog(props: LoginDialogProps) {
             onChange={(event, value) => handleOnChange(validateUrl, setCluster, { target: { value } })}
             renderInput={(params) => (
               <TextField {...params}
-                sx={{ minHeight: "5rem" }}
+                sx={{
+                  minHeight: "5rem",
+                  '& .MuiInputLabel-formControl': {
+                    paddingLeft: '10px',
+                  }
+                }}
                 autoFocus
                 id="cluster"
                 label="Cluster URL"
                 type="text"
                 fullWidth
-                variant="filled"
+                required
+                variant="outlined"
                 onChange={handleOnChange.bind(undefined, validateUrl, setCluster)}
                 value={cluster.value}
                 helperText={cluster.helperText}
@@ -113,24 +117,38 @@ export function LoginDialog(props: LoginDialogProps) {
             )}
           />
           <TextField
-            sx={{ minHeight: "5rem" }}
+            sx={{
+              minHeight: "5rem",
+              '& .MuiInputLabel-formControl': {
+                paddingLeft: '10px',
+              }
+            }}
             id="userName"
-            label="User name"
+            label="Username"
             type="text"
             fullWidth
-            variant="filled"
+            variant="outlined"
+            margin="normal"
+            required
             onChange={handleOnChange.bind(undefined, validateUsername, setUsername)}
             value={username.value}
             helperText={username.helperText}
             error={username.error}
           />
           <TextField
-            sx={{ minHeight: "5rem" }}
+            sx={{
+              minHeight: "5rem",
+              '& .MuiInputLabel-formControl': {
+                paddingLeft: '10px',
+              }
+            }}
             id="password"
             label="Password"
             type="password"
             fullWidth
-            variant="filled"
+            variant="outlined"
+            margin="normal"
+            required
             onChange={handleOnChange.bind(undefined, validatePassword, setPassword)}
             value={password.value}
             helperText={password.helperText}
