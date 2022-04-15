@@ -110,7 +110,7 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleClose}>Cancel</Button>
+          <Button variant="outlined" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" disabled={currentProject === selectedProject || loading} onClick={handleChange}>Change</Button>
         </DialogActions>
       </Dialog >
