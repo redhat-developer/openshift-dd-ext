@@ -118,7 +118,7 @@ export function ChangeContext(props: LoginDialogProps) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleCancel}>Cancel</Button>
+          <Button variant="outlined" onClick={handleCancel}>Cancel</Button>
           <Button variant="contained" disabled={loading || !kubeConfig || kubeConfig["current-context"] === selectedContext} onClick={handleChange}>Change</Button>
         </DialogActions>
       </Dialog>

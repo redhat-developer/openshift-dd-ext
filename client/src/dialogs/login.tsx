@@ -138,7 +138,7 @@ export function LoginDialog(props: LoginDialogProps) {
           />
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" onClick={handleClose}>Cancel</Button>
+          <Button variant="outlined" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" disabled={!isValid()} onClick={handleLogin}>Login</Button>
         </DialogActions>
       </Dialog>
