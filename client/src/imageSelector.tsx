@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { Box, styled } from "@mui/system";
 import { useEffect, useState } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
@@ -6,6 +6,7 @@ import { getLocalImages } from "./utils/DockerUtils";
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { useTheme } from '@mui/material';
 import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
+import { RefreshRounded } from "@mui/icons-material";
 
 interface ImageSelectorProps {
   onDeployClick?: (image: ISelectedImage) => void;
@@ -42,6 +43,11 @@ export function ImageSelector(props?: ImageSelectorProps) {
       loadImages();
     }
   }, [loading]);
+
+  const handleRefresh = () => {
+    setSelectedImage(null);
+    setLoading(true);
+  }
 
   const deploy = (): void => {
     if (selectedImage && onDeployClick) {
@@ -96,6 +102,9 @@ export function ImageSelector(props?: ImageSelectorProps) {
           })}
         />
       </div>
+      <Button variant="outlined" onClick={handleRefresh} style={{ marginLeft: '20px' }} >
+        <RefreshRounded /> Reload
+      </Button>
       <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
     </Box >
   );
