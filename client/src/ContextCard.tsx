@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { loadKubeContext } from './utils/OcUtils';
-import { Card, CardHeader, CardContent, IconButton, List, ListItem, ListItemText } from "@mui/material";
+import { Card, CardHeader, CardContent, IconButton, List, ListItem, ListItemText, Box, Button } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandLessRounded from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
@@ -115,17 +115,9 @@ export function CurrentContext() {
           subheader="Current context"
         />
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
-          <List dense>
-            <ListItem disablePadding>
-              <ListItemText primary={<span>Server: <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></span>}/>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemText primary={<span>User: {currentContext.user}</span>}/>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemText primary={<span>Project: {currentContext.project} <IconButton size="small" onClick={handleChangeProject}><EditRounded /></IconButton></span>}/>
-            </ListItem>
-          </List>
+          <Box>Server: <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></Box>
+          <Box>User: {currentContext.user}</Box>
+          <Box>Project: {currentContext.project} <Button sx={{ padding: 0 }} size="small" onClick={handleChangeProject}>Change</Button></Box>
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
