@@ -11,6 +11,7 @@ import { deployImage, exposeService, getAppName, getProjectRoute } from './utils
 import { openInBrowser, toast } from './utils/UIUtils';
 import logo from './images/logo.png';
 import React from 'react';
+import Logo from './logo';
 
 export function App() {
 
@@ -75,56 +76,44 @@ export function App() {
   // TODO: handle image no available from openshift cluster (either push or display instructions)
   // TODO: handle deployment failures (project doesn't exist, service already exists, etc.)
   return (
-    <>
-      {!deployView  && (
-      <Box
-        display="flex"
-        flexDirection="column"
-        flexGrow={1}
-        height="97vh"
-        width="100%"
-        boxShadow={shadow}
-      >
-      <div>
-        <div style= {{ textAlign: 'center', paddingBottom: '40px' }}>
-          <div style={{  height: 60, marginBottom: '2em', marginTop: '5em', width: '100%' }}>
-            <img src={logo} style={{ maxHeight: '100%', maxWidth: '100%' }} />
-          </div>
-          <Typography variant="h6" component="span">
-            Red Hat® OpenShift® is an enterprise-ready Kubernetes container platform built for an open hybrid cloud strategy.
-            It provides a consistent application platform to manage hybrid cloud, multicloud, and edge deployments.
-          </Typography>
-          <div>
-            <Button variant="contained" size="large" style={{ marginTop: '30px' }} onClick={handleDeployPage}>Deploy to OpenShift</Button>
-          </div>
-        </div>
-          <Card sx={{ maxWidth: 600, marginLeft: '10pc' }}>
-            <CardMedia
-              component="iframe"
-              image="https://www.youtube.com/embed/xEofcsd6HGg"
-              width="456"
-              height="320"
-            />
-          </Card>
-      </div>
-      </Box>)}
-      {deployView  && (
-        <Box
-          display="flex"
-          flexDirection="column"
-          flexGrow={1}
-          height="97vh"
-          width="100%"
-          padding="10px"
-          boxShadow={shadow}
-        >
+    <Box
+      display="flex"
+      flexDirection="column"
+      flexGrow={1}
+      height="97vh"
+      width="100%"
+      padding="10px"
+      boxShadow={shadow}
+    >
+      <Logo />
+      {!deployView && (
+        <>
+          <Box width="100%" alignContent="center" display="flex" flexDirection="column" flexWrap="nowrap" alignItems="center">
+            <Typography variant="h6" component="div">
+              Red Hat® OpenShift® is an enterprise-ready Kubernetes container platform built for an open hybrid cloud strategy.
+              It provides a consistent application platform to manage hybrid cloud, multicloud, and edge deployments.
+            </Typography>
+            <Typography variant='body1'>
+              <Button variant="contained" size="large" style={{ margin: '30px 0px 30px 0px' }} onClick={handleDeployPage}>Deploy to OpenShift</Button>
+            </Typography>
+            <Box minWidth={800} minHeight={450} display="flex">
+              <CardMedia
+                component="iframe"
+                image="https://www.youtube.com/embed/xEofcsd6HGg"
+              />
+            </Box>
+          </Box>
+        </>
+      )}
+      {deployView && (
+        <>
           <Header />
           <CurrentContext />
           <ImageSelector onDeployClick={deploy} />
           <DeploymentOutput deployResponse={deployResponse} />
-        </Box>
+        </>
       )}
-    </>
+    </Box>
   );
 }
 
