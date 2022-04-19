@@ -97,7 +97,6 @@ export function ImageSelector(props?: ImageSelectorProps) {
               neutral80: dockerTheme.palette.text.secondary, // text color for selectd value in input field
               // neutral90: 'yellow', // unknown
               // danger: 'hotpink' // unknown
-
             },
           })}
         />
