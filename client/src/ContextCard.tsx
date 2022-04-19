@@ -56,10 +56,6 @@ export function CurrentContext() {
     setCurrentContext(context);
   }
 
-  const onProjectChange = () => {
-    loadContext();
-  }
-
   const onLogin = () => {
     loadContext();
   }
@@ -121,8 +117,8 @@ export function CurrentContext() {
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
-      <ChangeContext install={installChangeContextDialog} onContextChange={onProjectChange} />
-      <ChangeProject install={installChangeProjectDialog} onProjectChange={onProjectChange} />
+      <ChangeContext install={installChangeContextDialog} onContextChange={loadContext} />
+      <ChangeProject install={installChangeProjectDialog} onProjectChange={loadContext} />
     </>
   );
 }
