@@ -94,7 +94,9 @@ export function App() {
             Red Hat® OpenShift® is an enterprise-ready Kubernetes container platform built for an open hybrid cloud strategy.
             It provides a consistent application platform to manage hybrid cloud, multicloud, and edge deployments.
           </Typography>
-          <Button variant="contained" size="large" style={{ marginTop: '30px' }} onClick={handleDeployPage}>Deploy to OpenShift</Button>
+          <div>
+            <Button variant="contained" size="large" style={{ marginTop: '30px' }} onClick={handleDeployPage}>Deploy to OpenShift</Button>
+          </div>
         </div>
           <Card sx={{ maxWidth: 600, marginLeft: '10pc' }}>
             <CardMedia
