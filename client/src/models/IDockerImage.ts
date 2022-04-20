@@ -3,6 +3,12 @@ export type IDockerImage = {
   ExposedPorts?: Map<string, any[]>
 };
 
+export interface IDockerImageInspectOutput {
+  Config: {
+    ExposedPorts: any;
+  }
+}
+
 
 export interface ISelectedImage {
   name: string;

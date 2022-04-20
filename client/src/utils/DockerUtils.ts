@@ -1,5 +1,5 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
-import { IDockerImage } from "../models/IDockerImage";
+import { IDockerImage, IDockerImageInspectOutput } from "../models/IDockerImage";
 
 
 
@@ -18,4 +18,16 @@ export async function getLocalImages(): Promise<Map<string, IDockerImage>> {
     }
   }
   return imageMap;
+}
+
+export async function getLocalImageInspectionJson(tag: string): Promise<IDockerImageInspectOutput[] | undefined> {
+
+  try {
+    const result = await ddClient.docker.cli.exec('image', ['inspect', tag]);
+    const resultJson = JSON.parse(result.stdout)
+    return resultJson as IDockerImageInspectOutput[];
+  } catch (err) {
+    console.log(err);
+  }
+  return;
 }

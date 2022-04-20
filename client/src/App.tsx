@@ -12,6 +12,7 @@ import { openInBrowser, toast } from './utils/UIUtils';
 import logo from './images/logo.png';
 import React from 'react';
 import Logo from './logo';
+import { getLocalImageInspectionJson } from './utils/DockerUtils';
 
 export function App() {
 
@@ -31,7 +32,10 @@ export function App() {
       setDeployResponse(output);
       return;
     }
-    const hasExposedPorts = selectedImage.image.ExposedPorts && Object.keys(selectedImage.image.ExposedPorts).length > 0;
+    const inspectionData = await getLocalImageInspectionJson(selectedImage.name);
+    let exposedPorts = inspectionData?.[0].Config.ExposedPorts;
+
+    const hasExposedPorts = exposedPorts && Object.keys(exposedPorts).length > 0;
     if (hasExposedPorts) {
       //Nothing to expose
       const appName = getAppName(imageName);
