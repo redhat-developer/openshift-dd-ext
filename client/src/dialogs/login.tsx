@@ -109,7 +109,7 @@ export function LoginDialog(props: LoginDialogProps) {
                 type="text"
                 fullWidth
                 required
-                variant="outlined"
+                variant="filled"
                 onChange={handleOnChange.bind(undefined, validateUrl, setCluster)}
                 value={cluster.value}
                 helperText={cluster.helperText}
@@ -127,7 +127,7 @@ export function LoginDialog(props: LoginDialogProps) {
             label="Username"
             type="text"
             fullWidth
-            variant="outlined"
+            variant="filled"
             margin="normal"
             required
             onChange={handleOnChange.bind(undefined, validateUsername, setUsername)}
@@ -146,7 +146,7 @@ export function LoginDialog(props: LoginDialogProps) {
             label="Password"
             type="password"
             fullWidth
-            variant="outlined"
+            variant="filled"
             margin="normal"
             required
             onChange={handleOnChange.bind(undefined, validatePassword, setPassword)}
