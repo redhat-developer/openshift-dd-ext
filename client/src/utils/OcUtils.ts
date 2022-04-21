@@ -235,3 +235,30 @@ export async function loginWithToken(cluster: string, token: string): Promise<vo
   });
 }
 
+export async function createProject(name: string): Promise<void> {
+  return ddClient.extension?.host?.cli.exec(ocPath, ['new-project', name]).then((result) => {
+    if (result.stderr) {
+      console.error('stderr:', result.stderr);
+      throw new Error(result.stderr);
+    }
+    console.info(`Created project '${name}'.`)
+  });
+}
+
+export async function listProjects(): Promise<string[]> {
+  const result = ddClient.extension?.host?.cli.exec(
+    ocPath,
+    ['get', 'projects', '-o', 'jsonpath="{range .items[*]}{.metadata.name}{\' \'}{range}"']
+  ).then((result) => {
+    let projects: string[] = [];
+    if (result.stderr) {
+      console.error('stderr:', result.stderr);
+    } else {
+      console.info(`Available projects '${result.stdout}'.`);
+      projects = result.stdout.trim().split(' ');
+    }
+    return projects;
+  });
+  return result ? result : []; // check for null required because of optional chaining
+}
+

@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Backdrop, Box, CircularProgress, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from '@mui/material';
 import { loadKubeContext, loadProjectNames, setCurrentContextProject } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
+import { NewProjectDialog } from './newProject';
 
 export interface ChangeProjectDialogProps {
   install: (showDialog: () => void) => void;
@@ -63,6 +64,21 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
     });
   }
 
+  let showNewProjectDialog: () => void;
+
+  const installNewProjectDialog = (showDialogHandler: () => void) => {
+    showNewProjectDialog = showDialogHandler;
+  }
+
+  const onProjectCreated = () => {
+    props.onProjectChange();
+  }
+
+  const handleNewProject = () => {
+    setOpen(false);
+    showNewProjectDialog();
+  };
+
   props.install(handleOpen);
 
   return (
@@ -112,11 +128,17 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
             </List>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={handleClose} disabled={changing}>Cancel</Button>
-          <Button variant="contained" disabled={currentProject === selectedProject || loading || changing} onClick={handleChange}>Change</Button>
+        <DialogActions sx={{ justifyContent: "space-between" }}>
+          <Box>
+            <Button variant="outlined" onClick={handleNewProject}> New Project</Button>
+          </Box>
+          <Box>
+            <Button variant="outlined" onClick={handleClose} disabled={changing}>Cancel</Button>
+            <Button variant="contained" disabled={currentProject === selectedProject || loading || changing} onClick={handleChange}>Change</Button>
+          </Box>
         </DialogActions>
       </Dialog >
+      <NewProjectDialog install={installNewProjectDialog} onCreate={onProjectCreated} />
     </div >
   );
 }
