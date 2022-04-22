@@ -11,6 +11,7 @@ import validator from 'validator';
 import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
+
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
   onLogin: () => void;
@@ -24,7 +25,6 @@ interface FieldState {
 
 const CREDENTIALS_TAB = 0;
 const TOKEN_TAB = 1;
-
 
 const DEFAULT_STATUS = { value: '', helperText: '', error: false };
 
@@ -123,7 +123,7 @@ export function LoginDialog(props: LoginDialogProps) {
       >
         {value === index && (
           <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
+            {children}
           </Box>
         )}
       </div>
@@ -144,20 +144,23 @@ export function LoginDialog(props: LoginDialogProps) {
   };
 
   const handleClusterPaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
+    event.preventDefault();
     const content = event.clipboardData.getData('text');
     // eg.
     // oc login https://api.rh-us-east-1.openshift.com --token=FooC8x6u1R591NIYhgNMbdfOUjg8-aD-yt-sQVwcS8Y
     const loginCommand = parseOcLoginCommand(content);
     if (loginCommand) {
+      const clusterValidationError = validateUrl(loginCommand.cluster).length > 0;
       setCluster({ // FIXME this doesn't work from Autocomplete's textfield
         value: loginCommand.cluster,
-        helperText: cluster.helperText,
-        error: validateUrl(loginCommand.cluster).length > 0
+        helperText: clusterValidationError ? cluster.helperText : '',
+        error: clusterValidationError
       });
+      const tokenValidationError = validateToken(loginCommand.token).length > 0;
       setToken({
         value: loginCommand.token,
-        helperText: token.helperText,
-        error: validateToken(loginCommand.token).length > 0
+        helperText: tokenValidationError ? token.helperText : '',
+        error: tokenValidationError
       });
       if (tab !== 1) {
         setTab(1);
@@ -195,22 +198,12 @@ export function LoginDialog(props: LoginDialogProps) {
           <DialogContentText style={{ marginBottom: '15px' }}>
             Provide OpenShift cluster URL, username and password to login.
           </DialogContentText>
-          {/* <TextField
-            id="foobar"
-            label="Standalone Cluster field works"
-            type="text"
-            fullWidth
-            variant="filled"
-            onPaste={handleClusterPaste} // onPaste works here
-            value={cluster.value}
-            helperText={cluster.helperText}
-            error={cluster.error} /> */}
-
-
           <Autocomplete
             freeSolo
             options={servers}
-            onChange={(event, value) => handleOnChange(validateUrl, setCluster, { target: { value } })}
+            onPaste={handleClusterPaste} //FIXME onPaste doesn't work here (setCluster doesn't work)
+            value={cluster.value}
+            onChange={(event, value) => handleOnChange(validateUrl, setCluster, { target: { value: value ? value : '' } })}
             renderInput={(params) => (
               <TextField {...params}
                 sx={{
@@ -226,11 +219,10 @@ export function LoginDialog(props: LoginDialogProps) {
                 fullWidth
                 required
                 variant="filled"
-                onPaste={handleClusterPaste} //FIXME onPaste doesn't work here (setCluster doesn't work)
+                error={cluster.error}
                 onChange={handleOnChange.bind(undefined, validateUrl, setCluster)}
-                value={cluster.value}
                 helperText={cluster.helperText}
-                error={cluster.error} />
+              />
             )}
           />
           <Tabs value={tab} aria-label="Authentication options" onChange={handleTabChange}>
