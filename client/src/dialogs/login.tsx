@@ -169,13 +169,14 @@ export function LoginDialog(props: LoginDialogProps) {
       <Dialog open={open} onClose={handleClose} PaperProps={{
         sx: {
           minWidth: 500,
-          minHeight: 550
+          minHeight: 570
         }
       }}>
         <DialogTitle>Login to OpenShift</DialogTitle>
         <DialogContent>
           <DialogContentText style={{ marginBottom: '15px' }}>
-            Provide OpenShift cluster URL, username and password to login.
+            Provide OpenShift cluster URL, username and password, or a bearer token to login.
+            You can paste the <i>oc login</i> command from your terminal in the cluster url field.
           </DialogContentText>
           <Autocomplete
             freeSolo
