@@ -113,7 +113,11 @@ export function CurrentContext() {
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
           <Box>Server: <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></Box>
           <Box>User: {currentContext.user}</Box>
-          <Box>Project: {currentContext.project} <Button sx={{ padding: 0 }} size="small" onClick={handleChangeProject}>Change</Button></Box>
+          <Box>Project: {currentContext.project}
+            {(currentContext !== UnknownKubeContext) && (
+              <Button sx={{ padding: 0 }} size="small" onClick={handleChangeProject}>Change</Button>
+            )}
+          </Box>
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
