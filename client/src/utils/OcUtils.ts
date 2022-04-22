@@ -220,3 +220,18 @@ export async function login(cluster: string, username: string, password: string)
   });
 }
 
+export async function loginWithToken(cluster: string, token: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["login", cluster, '--token', token]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        reject(result.stderr);
+      }
+      console.log(`logged into cluster ${cluster}  with token ${token}.`);
+      resolve();
+    }).catch((e) => {
+      reject(e.stderr);
+    });
+  });
+}
+
