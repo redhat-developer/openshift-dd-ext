@@ -184,7 +184,12 @@ export function LoginDialog(props: LoginDialogProps) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} PaperProps={{
+        sx: {
+          minWidth: 500,
+          minHeight: 550
+        }
+      }}>
         <DialogTitle>Login to OpenShift</DialogTitle>
         <DialogContent>
           <DialogContentText style={{ marginBottom: '15px' }}>
