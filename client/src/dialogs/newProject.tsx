@@ -10,8 +10,11 @@ import Autocomplete from '@mui/material/Autocomplete';
 import validator from 'validator';
 import { createProject, loadServerUrls, login } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
+import { validateLength, validateResourcePattern } from '../utils/ValidationUtils';
+import { minHeight } from '@mui/system';
 
 interface LoginDialogProps {
+  existingProjects?: string[];
   install: (showDialog: () => void) => void;
   onCreate: () => void;
 }
@@ -29,13 +32,25 @@ export function NewProjectDialog(props: LoginDialogProps) {
   const [name, setName] = React.useState<FieldState>(DEFAULT_STATUS);
 
   const validateName = (value: string): string => {
-    return value?.trim().length > 0 ? '' : 'Project Name is empty';
+    const name = value.trim();
+    if (name.length === 0) {
+      return 'Project name is empty';
+    }
+    if (props.existingProjects?.includes(name)) {
+      return `Project '${name}' already exists`;
+    }
+    let validationMessage = validateLength(name, 2, 63);
+    if (!validationMessage) {
+      validationMessage = validateResourcePattern(name, `Please use lower case alphanumeric characters or '-', start with an alphabetic character, and end with an alphanumeric character`);
+    }
+    return validationMessage;
   }
 
   const handleOnChange = (validator: (value: string) => string, setter: React.Dispatch<React.SetStateAction<FieldState>>, event: any): void => {
-    const helperText = validator(event.target.value);
+    const value = event.target.value.trim();
+    const helperText = validator(value);
     setter({
-      value: event.target.value,
+      value: value,
       helperText,
       error: helperText.length > 0
     });
@@ -66,11 +81,17 @@ export function NewProjectDialog(props: LoginDialogProps) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Create new OpenShift Project</DialogTitle>
+      <Dialog open={open} onClose={handleClose} PaperProps={{
+        sx: {
+          minWidth: 500,
+          maxWidth: 500,
+          minHeight: 300
+        }
+      }}>
+        <DialogTitle>New OpenShift Project</DialogTitle>
         <DialogContent>
           <DialogContentText style={{ marginBottom: '15px' }}>
-            Provide Name for New OpenShift Project.
+            Enter a project name.
           </DialogContentText>
           <TextField
             sx={{
