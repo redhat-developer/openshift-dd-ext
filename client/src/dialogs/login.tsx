@@ -10,7 +10,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import validator from 'validator';
 import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { Box, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
@@ -110,26 +110,6 @@ export function LoginDialog(props: LoginDialogProps) {
     value: number;
   }
 
-  function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box sx={{ p: 3 }}>
-            {children}
-          </Box>
-        )}
-      </div>
-    );
-  }
-
   function a11yProps(index: number) {
     return {
       id: `simple-tab-${index}`,
@@ -151,7 +131,7 @@ export function LoginDialog(props: LoginDialogProps) {
     const loginCommand = parseOcLoginCommand(content);
     if (loginCommand) {
       const clusterValidationError = validateUrl(loginCommand.cluster).length > 0;
-      setCluster({ // FIXME this doesn't work from Autocomplete's textfield
+      setCluster({
         value: loginCommand.cluster,
         helperText: clusterValidationError ? cluster.helperText : '',
         error: clusterValidationError
@@ -165,7 +145,6 @@ export function LoginDialog(props: LoginDialogProps) {
       if (tab !== 1) {
         setTab(1);
       }
-      // event.preventDefault();
     }
   }
 
@@ -229,68 +208,80 @@ export function LoginDialog(props: LoginDialogProps) {
             <Tab label="Credentials" {...a11yProps(CREDENTIALS_TAB)} />
             <Tab label="Bearer Token" {...a11yProps(TOKEN_TAB)} />
           </Tabs>
-          <TabPanel value={tab} index={CREDENTIALS_TAB}>
-            <TextField
-              sx={{
-                minHeight: "5rem",
-                '& .MuiInputLabel-formControl': {
-                  paddingLeft: '10px',
-                }
-              }}
-              id="userName"
-              label="Username"
-              type="text"
-              fullWidth
-              variant="filled"
-              margin="normal"
-              required
-              onChange={handleOnChange.bind(undefined, validateUsername, setUsername)}
-              value={username.value}
-              helperText={username.helperText}
-              error={username.error}
-            />
-            <TextField
-              sx={{
-                verticalAlign: 'top',
-                minHeight: "5rem",
-                '& .MuiInputLabel-formControl': {
-                  paddingLeft: '10px',
-                }
-              }}
-              id="password"
-              label="Password"
-              type="password"
-              fullWidth
-              variant="filled"
-              margin="normal"
-              required
-              onChange={handleOnChange.bind(undefined, validatePassword, setPassword)}
-              value={password.value}
-              helperText={password.helperText}
-              error={password.error}
-            />
-          </TabPanel>
-          <TabPanel value={tab} index={TOKEN_TAB}>
-            <TextField
-              sx={{
-                minHeight: "5rem",
-                '& .MuiInputLabel-formControl': {
-                  paddingLeft: '10px',
-                }
-              }}
-              id="token"
-              label="Bearer Token"
-              type="text"
-              fullWidth
-              variant="filled"
-              margin="normal"
-              required
-              onChange={handleOnChange.bind(undefined, validateToken, setToken)}
-              value={token.value}
-              helperText={token.helperText}
-              error={token.error}
-            />
-          </TabPanel>
+          <div
+            role="tabpanel"
+            hidden={tab !== CREDENTIALS_TAB}
+            id={`simple-tabpanel-${CREDENTIALS_TAB}`}
+            aria-labelledby={`simple-tab-${CREDENTIALS_TAB}`}>
+            <Box sx={{ p: 3 }}>
+              <TextField
+                sx={{
+                  minHeight: "5rem",
+                  '& .MuiInputLabel-formControl': {
+                    paddingLeft: '10px',
+                  }
+                }}
+                id="userName"
+                label="Username"
+                type="text"
+                fullWidth
+                variant="filled"
+                margin="normal"
+                required
+                onChange={handleOnChange.bind(undefined, validateUsername, setUsername)}
+                value={username.value}
+                helperText={username.helperText}
+                error={username.error}
+              />
+              <TextField
+                sx={{
+                  verticalAlign: 'top',
+                  minHeight: "5rem",
+                  '& .MuiInputLabel-formControl': {
+                    paddingLeft: '10px',
+                  }
+                }}
+                id="password"
+                label="Password"
+                type="password"
+                fullWidth
+                variant="filled"
+                margin="normal"
+                required
+                onChange={handleOnChange.bind(undefined, validatePassword, setPassword)}
+                value={password.value}
+                helperText={password.helperText}
+                error={password.error}
+              />
+            </Box>
+          </div>
+          <div
+            role="tabpanel"
+            hidden={tab !== TOKEN_TAB}
+            id={`simple-tabpanel-${TOKEN_TAB}`}
+            aria-labelledby={`simple-tab-${TOKEN_TAB}`}>
+            <Box sx={{ p: 3 }}>
+              <TextField
+                sx={{
+                  minHeight: "5rem",
+                  '& .MuiInputLabel-formControl': {
+                    paddingLeft: '10px',
+                  }
+                }}
+                id="token"
+                label="Bearer Token"
+                type="text"
+                fullWidth
+                variant="filled"
+                margin="normal"
+                required
+                onChange={handleOnChange.bind(undefined, validateToken, setToken)}
+                value={token.value}
+                helperText={token.helperText}
+                error={token.error}
+              />
+            </Box>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>Cancel</Button>
