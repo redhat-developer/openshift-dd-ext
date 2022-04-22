@@ -135,15 +135,15 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
         </DialogContent>
         <DialogActions sx={{ padding: "0 24px 20px 24px", justifyContent: "space-between" }}>
           <Box>
-            <Button variant="outlined" onClick={handleNewProject}> New Project</Button>
+            <Button variant="outlined" disabled={loading} onClick={handleNewProject}> New Project</Button>
           </Box>
           <Box>
-            <Button sx={{ marginRight: "10px" }} variant="outlined" onClick={handleClose} disabled={changing}>Cancel</Button>
-            <Button variant="contained" disabled={currentProject === selectedProject || loading || changing} onClick={handleChange}>Change</Button>
+            <Button variant="outlined" onClick={handleClose} >Cancel</Button>
+            <Button variant="contained" disabled={currentProject === selectedProject || loading} onClick={handleChange} style={{ marginLeft: '20px' }}>Change</Button>
           </Box>
         </DialogActions>
       </Dialog >
-      <NewProjectDialog install={installNewProjectDialog} onCreate={onProjectCreated} />
+      <NewProjectDialog install={installNewProjectDialog} onCreate={onProjectCreated} existingProjects={projects} />
     </div >
   );
 }
