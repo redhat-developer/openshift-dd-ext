@@ -19,6 +19,7 @@ export interface ChangeProjectDialogProps {
 export function ChangeProject(props: ChangeProjectDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
+  const [changing, setChanging] = React.useState(false);
   const [currentProject, setCurrentProject] = React.useState('');
   const [selectedProject, setSelectedProject] = React.useState('');
   const [projects, setProjects] = React.useState<string[]>([]);
@@ -30,9 +31,11 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
   };
 
   const handleChange = () => {
+    setChanging(true);
     setCurrentContextProject(selectedProject).catch((error) => {
       ddClient.desktopUI.toast.error('Setting current project for current context failed.');
     }).then(() => {
+      setChanging(false);
       setOpen(false)
       props.onProjectChange();
     });
@@ -75,12 +78,12 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
               Select Project from the list below
             </Typography>
           </DialogContentText>
-          {(loading) && (
+          {(loading || changing) && (
             <Box width="100%" component="div" display="flex" alignContent="center" justifyContent="center" padding="20px">
               <CircularProgress />
             </Box>
           )}
-          {(!loading) && (
+          {(!loading && !changing) && (
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
               {projects.map((project, index) => {
                 return (
@@ -110,8 +113,8 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" disabled={currentProject === selectedProject || loading} onClick={handleChange}>Change</Button>
+          <Button variant="outlined" onClick={handleClose} disabled={changing}>Cancel</Button>
+          <Button variant="contained" disabled={currentProject === selectedProject || loading || changing} onClick={handleChange}>Change</Button>
         </DialogActions>
       </Dialog >
     </div >
