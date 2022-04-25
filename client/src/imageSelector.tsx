@@ -1,4 +1,4 @@
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 import { Box, styled } from "@mui/system";
 import { useEffect, useState } from "react";
 import Select, { SingleValue, StylesConfig } from "react-select";
@@ -101,10 +101,14 @@ export function ImageSelector(props?: ImageSelectorProps) {
           })}
         />
       </div>
-      <Button variant="outlined" onClick={handleRefresh} style={{ marginLeft: '20px' }} >
-        <RefreshRounded /> Reload
-      </Button>
-      <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
+      <Tooltip title="Reload the list of local Docker images">
+        <Button variant="outlined" onClick={handleRefresh} style={{ marginLeft: '20px' }} >
+          <RefreshRounded /> Reload
+        </Button>
+      </Tooltip>
+      <Tooltip title="Deploy the selected image to OpenShift">
+        <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
+      </Tooltip>
     </Box >
   );
 }

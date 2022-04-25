@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { loadKubeContext } from './utils/OcUtils';
-import { Card, CardHeader, CardContent, IconButton, List, ListItem, ListItemText, Box, Button } from "@mui/material";
+import { Card, CardHeader, CardContent, IconButton, List, ListItem, ListItemText, Box, Button, Tooltip } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandLessRounded from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
@@ -84,25 +84,31 @@ export function CurrentContext() {
         <CardHeader
           action={
             <>
-              <IconButton
-                aria-label="action"
-                onClick={handleLogin}>
-                <LoginRounded />
-              </IconButton>
-              <IconButton
-                aria-label="action"
-                onClick={handleChangeContext}>
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                onClick={handleExpand}>
-                {(expanded) && (
-                  <ExpandLessRounded />
-                )}
-                {(!expanded) && (
-                  <ExpandMoreRounded />
-                )}
-              </IconButton>
+              <Tooltip title='Login to an OpenShift cluster'>
+                <IconButton
+                  aria-label="action"
+                  onClick={handleLogin}>
+                  <LoginRounded />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title='Change context'>
+                <IconButton
+                  aria-label="action"
+                  onClick={handleChangeContext}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title='Expand context details'>
+                <IconButton
+                  onClick={handleExpand}>
+                  {(expanded) && (
+                    <ExpandLessRounded />
+                  )}
+                  {(!expanded) && (
+                    <ExpandMoreRounded />
+                  )}
+                </IconButton>
+              </Tooltip>
             </>
           }
           title={
@@ -115,7 +121,9 @@ export function CurrentContext() {
           <Box>User: {currentContext.user}</Box>
           <Box>Project: {currentContext.project}
             {(currentContext !== UnknownKubeContext) && (
-              <Button sx={{ padding: 0 }} size="small" onClick={handleChangeProject}>Change</Button>
+              <Tooltip title='Select a different project to deploy to'>
+                <Button sx={{ padding: 0 }} size="small" onClick={handleChangeProject}>Change</Button>
+              </Tooltip>
             )}
           </Box>
         </CardContent>
