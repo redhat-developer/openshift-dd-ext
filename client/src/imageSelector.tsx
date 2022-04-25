@@ -7,6 +7,7 @@ import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { useTheme } from '@mui/material';
 import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
 import { RefreshRounded } from "@mui/icons-material";
+import { toast } from "./utils/UIUtils";
 
 interface ImageSelectorProps {
   onDeployClick?: (image: ISelectedImage) => void;
@@ -19,13 +20,16 @@ interface ImageOption {
 
 export function ImageSelector(props?: ImageSelectorProps) {
   const onDeployClick = props?.onDeployClick;
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<Map<string, IDockerImage>>(new Map());
   const [imageOptions, setImageOptions] = useState<ImageOption[]>([]);
   const [selectedImage, setSelectedImage] = useState<ISelectedImage | null>(null);
 
   async function loadImages(): Promise<void> {
+    const refreshing = !initialLoading;
     const localImages = await getLocalImages();
+    setInitialLoading(false);
     const sortedKeys = Array.from(localImages.keys()).sort();
 
     const options = sortedKeys.map(d => ({
@@ -35,6 +39,9 @@ export function ImageSelector(props?: ImageSelectorProps) {
     setLoading(false);
     setImages(localImages);
     setImageOptions(options);
+    if (refreshing) {
+      toast.success('Reloaded image list');
+    }
     return;
   }
 
@@ -102,12 +109,16 @@ export function ImageSelector(props?: ImageSelectorProps) {
         />
       </div>
       <Tooltip title="Reload the list of local Docker images">
-        <Button variant="outlined" onClick={handleRefresh} style={{ marginLeft: '20px' }} >
-          <RefreshRounded /> Reload
-        </Button>
+        <span>
+          <Button variant="outlined" onClick={handleRefresh} style={{ marginLeft: '20px' }} disabled={loading}>
+            <RefreshRounded /> Reload
+          </Button>
+        </span>
       </Tooltip>
       <Tooltip title="Deploy the selected image to OpenShift">
-        <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
+        <span>
+          <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
+        </span>
       </Tooltip>
     </Box >
   );
