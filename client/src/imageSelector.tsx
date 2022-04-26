@@ -108,14 +108,14 @@ export function ImageSelector(props?: ImageSelectorProps) {
           })}
         />
       </div>
-      <Tooltip title="Reload the list of local Docker images">
+      <Tooltip title="Reload the list of local Docker images" placement='bottom-end'>
         <span>
           <Button variant="outlined" onClick={handleRefresh} style={{ marginLeft: '20px' }} disabled={loading}>
             <RefreshRounded /> Reload
           </Button>
         </span>
       </Tooltip>
-      <Tooltip title="Deploy the selected image to OpenShift">
+      <Tooltip title="Deploy the selected image to OpenShift" placement='bottom-end'>
         <span>
           <Button style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
         </span>

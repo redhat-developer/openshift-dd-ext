@@ -84,21 +84,21 @@ export function CurrentContext() {
         <CardHeader
           action={
             <>
-              <Tooltip title='Login to an OpenShift cluster'>
+              <Tooltip title='Login to an OpenShift cluster' placement='bottom-end'>
                 <IconButton
                   aria-label="action"
                   onClick={handleLogin}>
                   <LoginRounded />
                 </IconButton>
               </Tooltip>
-              <Tooltip title='Change context'>
+              <Tooltip title='Change context' placement='bottom-end'>
                 <IconButton
                   aria-label="action"
                   onClick={handleChangeContext}>
                   <EditIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title='Expand context details'>
+              <Tooltip title='Expand context details' placement='bottom-end'>
                 <IconButton
                   onClick={handleExpand}>
                   {(expanded) && (
