@@ -6,5 +6,5 @@ export function validateLength(value: string, min: number, max: number): string 
 }
 
 export function validateResourcePattern(value: string, message: string): string {
-  return (value && value.match('^[a-z]([-a-z0-9]*[a-z0-9])*$')) ? '' : message;
+  return (value && value.match('^[a-z0-9]([-a-z0-9]*[a-z0-9])*$')) ? '' : message;
 }
