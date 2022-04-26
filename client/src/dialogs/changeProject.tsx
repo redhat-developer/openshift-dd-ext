@@ -83,7 +83,12 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} fullWidth={true}>
+      <Dialog open={open} onClose={handleClose} fullWidth={true} PaperProps={{
+        sx: {
+          minWidth: 500,
+          minHeight: 570
+        }
+      }}>
         <DialogTitle>Change Project</DialogTitle>
         <DialogContent>
           <DialogContentText paddingBottom="16px">
@@ -128,12 +133,12 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
             </List>
           )}
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "space-between" }}>
+        <DialogActions sx={{ padding: "0 24px 20px 24px", justifyContent: "space-between" }}>
           <Box>
             <Button variant="outlined" onClick={handleNewProject}> New Project</Button>
           </Box>
           <Box>
-            <Button variant="outlined" onClick={handleClose} disabled={changing}>Cancel</Button>
+            <Button sx={{ marginRight: "10px" }} variant="outlined" onClick={handleClose} disabled={changing}>Cancel</Button>
             <Button variant="contained" disabled={currentProject === selectedProject || loading || changing} onClick={handleChange}>Change</Button>
           </Box>
         </DialogActions>
