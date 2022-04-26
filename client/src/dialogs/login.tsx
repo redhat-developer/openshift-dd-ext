@@ -169,7 +169,7 @@ export function LoginDialog(props: LoginDialogProps) {
       <Dialog open={open} onClose={handleClose} PaperProps={{
         sx: {
           minWidth: 500,
-          minHeight: 570
+          minHeight: 575
         }
       }}>
         <DialogTitle>Login to OpenShift</DialogTitle>
@@ -284,7 +284,7 @@ export function LoginDialog(props: LoginDialogProps) {
             </Box>
           </div>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ padding: "0 24px 20px 24px" }}>
           <Button variant="outlined" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" disabled={!isValid()} onClick={handleLogin}>Login</Button>
         </DialogActions>

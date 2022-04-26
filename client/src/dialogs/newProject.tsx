@@ -113,7 +113,7 @@ export function NewProjectDialog(props: LoginDialogProps) {
             error={name.error}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ padding: "0 24px 20px 24px" }}>
           <Button variant="outlined" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" disabled={name.value.trim() === ''} onClick={handleCreateProject}>Create</Button>
         </DialogActions>
