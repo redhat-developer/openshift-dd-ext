@@ -1,5 +1,5 @@
 import { Box, Button, Typography, Card, CardMedia } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CurrentContext } from './ContextCard';
 import { DeploymentOutput } from './DeploymentOutput';
 import Header from './Header';
@@ -60,16 +60,21 @@ export function App() {
       setDeployResponse(output);
       toast.success(`Deployed ${imageName} but no route was created.`);
     }
-
   }
 
   const shadow = 0;
-
-  const [deployView, setDeployView] = React.useState(false);
+  
+  const [deployView, setDeployView] = React.useState(() =>{
+    return sessionStorage.getItem('deployViewState') === 'true';
+  });
 
   const handleDeployPage = () => {
     setDeployView(true);
   }
+
+  useEffect(() => {
+    sessionStorage.setItem('deployViewState', deployView+'');
+  }, [deployView]);
 
   // TODO handle kube context and then
   // TODO: handle oc login (detect login / display instructions)
