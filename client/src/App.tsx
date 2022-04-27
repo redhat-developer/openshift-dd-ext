@@ -8,9 +8,9 @@ import { ImageSelector } from './imageSelector';
 import { ISelectedImage } from './models/IDockerImage';
 import { deployImage, exposeService, getAppName, getProjectRoute } from './utils/OcUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
-import React from 'react';
 import Logo from './logo';
 import { getLocalImageInspectionJson } from './utils/DockerUtils';
+import { useSessionState } from './hooks/useStorageState';
 
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
@@ -63,18 +63,13 @@ export function App() {
   }
 
   const shadow = 0;
-  
-  const [deployView, setDeployView] = React.useState(() =>{
-    return sessionStorage.getItem('deployViewState') === 'true';
-  });
+
+  const [deployView, setDeployView] = useSessionState('deployView', false);
 
   const handleDeployPage = () => {
     setDeployView(true);
   }
 
-  useEffect(() => {
-    sessionStorage.setItem('deployViewState', deployView+'');
-  }, [deployView]);
 
   // TODO handle kube context and then
   // TODO: handle oc login (detect login / display instructions)
