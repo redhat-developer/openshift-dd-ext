@@ -11,10 +11,12 @@ import { ChangeContext } from './dialogs/changeContext';
 import { EditRounded } from '@mui/icons-material';
 import { LoginRounded } from '@mui/icons-material';
 import { ChangeProject } from './dialogs/changeProject';
+import { useRecoilState } from 'recoil';
+import { currentContextState } from './state/currentContextState';
 
 export function CurrentContext() {
   const [loading, setLoading] = useState(true);
-  const [currentContext, setCurrentContext] = useState(UnknownKubeContext);
+  const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
   const [expanded, setExpanded] = useState(false);
 
   const handleLogin = () => {
