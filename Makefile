@@ -26,6 +26,11 @@ update-extension: build-extension ## Update the extension
 uninstall-extension: ## Uninstall the extension
 	docker extension uninstall $(IMAGE):$(TAG)
 
+start-dev-extension: ## Enable debug and ui-source
+	docker extension dev debug redhatdeveloper/openshift-dd-ext:latest
+	docker extension dev ui-source redhatdeveloper/openshift-dd-ext:latest http://localhost:3000
+	yarn --cwd ./client start
+
 prepare-buildx: ## Create buildx builder for multi-arch build, if not exists
 	docker buildx inspect $(BUILDER) || docker buildx create --name=$(BUILDER) --driver=docker-container --driver-opt=network=host
 
