@@ -1,5 +1,6 @@
 export type IDockerImage = {
   RepoTags?: string[]
+  Labels?: { [k: string]: string }
   ExposedPorts?: Map<string, any[]>
 };
 

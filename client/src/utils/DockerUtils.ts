@@ -11,10 +11,15 @@ export async function getLocalImages(): Promise<Map<string, IDockerImage>> {
   const images = (await ddClient.docker.listImages()) as IDockerImage[];
   const imageMap = new Map<string, IDockerImage>();
   for (const image of images) {
-    const tags = image.RepoTags?.filter(tag => tag != null && '<none>:<none>' !== tag);
+    if (image.Labels && image.Labels["com.docker.desktop.extension.api.version"]) {
+      //Ignore Docker Desktop extension images
+        continue;
+    }
+    const tags = image.RepoTags?.filter(tag => tag != null && '<none>:<none>' !== tag)
     if (tags && tags.length > 0) {
-      const imageName = tags[0];
-      imageMap.set(imageName, image);
+      for (const imageName of tags) {
+        imageMap.set(imageName, image);
+      }
     }
   }
   return imageMap;
