@@ -153,8 +153,8 @@ export async function loadProjectNames(): Promise<string[]> {
   });
 }
 
-export async function loadServerUrls(): Promise<string[]> {
-  const kc = await readKubeConfig();
+export async function loadServerUrls(kcp: any = undefined): Promise<string[]> {
+  const kc = kcp ? kcp : await readKubeConfig();
   const clusters: string[] = kc.clusters.map((item: any) => item.cluster.server);
   return [... new Set(clusters)];
 }
