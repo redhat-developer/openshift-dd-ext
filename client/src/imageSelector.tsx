@@ -1,13 +1,15 @@
-import { Button, IconButton, Tooltip } from "@mui/material";
-import { Box, styled } from "@mui/system";
+import { Button, Paper, Tooltip } from "@mui/material";
+import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
-import Select, { SingleValue, StylesConfig } from "react-select";
+import Select, { SingleValue } from "react-select";
 import { getLocalImages } from "./utils/DockerUtils";
-import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { useTheme } from '@mui/material';
 import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
 import { RefreshRounded } from "@mui/icons-material";
-import { toast } from "./utils/UIUtils";
+import { openInBrowser, toast } from "./utils/UIUtils";
+import { useRecoilState } from "recoil";
+import { currentContextState } from "./state/currentContextState";
+import { UnknownKubeContext } from "./models/KubeContext";
 
 interface ImageSelectorProps {
   onDeployClick?: (image: ISelectedImage) => void;
@@ -25,6 +27,7 @@ export function ImageSelector(props?: ImageSelectorProps) {
   const [images, setImages] = useState<Map<string, IDockerImage>>(new Map());
   const [imageOptions, setImageOptions] = useState<ImageOption[]>([]);
   const [selectedImage, setSelectedImage] = useState<ISelectedImage | null>(null);
+  const [currentContext, ] = useRecoilState(currentContextState);
 
   async function loadImages(): Promise<void> {
     const refreshing = !initialLoading;
@@ -72,8 +75,21 @@ export function ImageSelector(props?: ImageSelectorProps) {
       }
     }
   }
+
+  const deploymentText = () => {
+    if (currentContext === UnknownKubeContext && !selectedImage) {
+      return <span>Select a context and an image to deploy</span>;
+    } else if (currentContext === UnknownKubeContext) {
+      return <span>Select a context to deploy</span>;
+    } else if (!selectedImage) {
+      return <span>Select an image to deploy</span>;
+    } 
+    return <span>Deploying {selectedImage?.name} to project '{currentContext.project}' on <a href="#" onClick={()=> openInBrowser(currentContext.clusterUrl!!)}>{currentContext.clusterUrl}</a></span>;
+  }
+
   const dockerTheme = useTheme();
   return (
+    <>
     <Box margin="15px 0px 15px 0px" display="flex" flexDirection="row">
       <div style={{ flex: '1 1 auto' }}>
         <Select
@@ -121,5 +137,9 @@ export function ImageSelector(props?: ImageSelectorProps) {
         </span>
       </Tooltip>
     </Box >
+    <Paper elevation={4} style={{backgroundColor:'white', padding:'10px', textAlign: 'center', marginBottom:'20px'}}>
+    {deploymentText()}
+    </Paper>
+    </>
   );
 }

@@ -1,4 +1,3 @@
-import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Box, Button, Typography, Card, CardMedia } from '@mui/material';
 import { useState } from 'react';
 import { CurrentContext } from './ContextCard';
@@ -9,13 +8,11 @@ import { ImageSelector } from './imageSelector';
 import { ISelectedImage } from './models/IDockerImage';
 import { deployImage, exposeService, getAppName, getProjectRoute } from './utils/OcUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
-import logo from './images/logo.png';
 import React from 'react';
 import Logo from './logo';
 import { getLocalImageInspectionJson } from './utils/DockerUtils';
 
 export function App() {
-
   const [deployResponse, setDeployResponse] = useState("");
 
   async function deploy(selectedImage: ISelectedImage) {
