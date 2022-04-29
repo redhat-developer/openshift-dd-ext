@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 class UseStorageState {
   storage: Storage;
 
-  constructor(storage:Storage) {
+  constructor(storage: Storage) {
     this.storage = storage;
   }
 
-  getStorageValue<T>(key:string, defaultValue: T) {
+  getStorageValue<T>(key: string, defaultValue: T) {
     // getting stored value
     const saved = this.storage.getItem(key);
     if (saved) {
@@ -16,16 +16,20 @@ class UseStorageState {
     return defaultValue;
   }
 
-  useStorage<T>(key:string, defaultValue: T):[T, React.Dispatch<React.SetStateAction<T>>] {
+  useStorage<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
     const [value, setValue] = useState(() => {
-      return this.getStorageValue(key, defaultValue);
+      const result = this.getStorageValue(key, defaultValue);
+      console.log('Hook getting default value:', result);
+      return result;
     });
-  
+
     useEffect(() => {
       // storing key/value pair
+      console.log('Storing value:', value)
       this.storage.setItem(key, JSON.stringify(value));
+      console.log('Value in storage:', this.storage.getItem(key));
     }, [key, value]);
-  
+
     return [value, setValue];
   };
 }
@@ -40,7 +44,7 @@ const useSessionStorage = new UseStorageState(sessionStorage);
  * @param defaultValue the default value to use if the key is not found
  * @returns a stateful value, and a function to update it
  */
-export function useLocalState<T> (key:string, defaultValue: T) {
+export function useLocalState<T>(key: string, defaultValue: T) {
   return useLocalStorage.useStorage(key, defaultValue);
 }
 
@@ -52,6 +56,6 @@ export function useLocalState<T> (key:string, defaultValue: T) {
  * @param defaultValue the default value to use if the key is not found
  * @returns a stateful value, and a function to update it
  */
-export function useSessionState<T> (key:string, defaultValue: T) {
+export function useSessionState<T>(key: string, defaultValue: T) {
   return useSessionStorage.useStorage(key, defaultValue);
 }

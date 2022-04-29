@@ -10,7 +10,7 @@ import { deployImage, exposeService, getAppName, getProjectRoute } from './utils
 import { openInBrowser, toast } from './utils/UIUtils';
 import Logo from './logo';
 import { getLocalImageInspectionJson } from './utils/DockerUtils';
-import { useSessionState } from './hooks/useStorageState';
+import { useLocalState, useSessionState } from './hooks/useStorageState';
 
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
@@ -64,10 +64,14 @@ export function App() {
 
   const shadow = 0;
 
-  const [deployView, setDeployView] = useSessionState('deployView', false);
+  const [deployView, setDeployView] = useLocalState('deployView', false);
 
   const handleDeployPage = () => {
     setDeployView(true);
+  }
+
+  const handleOnClick = () => {
+    setDeployView(false);
   }
 
 
@@ -86,7 +90,7 @@ export function App() {
       padding="10px"
       boxShadow={shadow}
     >
-      <Logo />
+      <Logo handleOnClick={handleOnClick} deployView={deployView} />
       {!deployView && (
         <>
           <Box width="100%" alignContent="center" display="flex" flexDirection="column" flexWrap="nowrap" alignItems="center">

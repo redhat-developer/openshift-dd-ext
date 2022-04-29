@@ -1,7 +1,13 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import logo from './images/logo.png';
+import { useLocalState, useSessionState } from './hooks/useStorageState';
 
-export default function Logo() {
+export interface LogoProps {
+  handleOnClick: () => void;
+  deployView: boolean;
+}
+
+export default function Logo(props: LogoProps) {
 
   // TODO use styles.
   const iconContainer = {
@@ -15,11 +21,15 @@ export default function Logo() {
     maxHeight: '100%',
     maxWidth: '100%'
   }
-
   return (
     <Box style={{ textAlign: 'center', marginBottom: '20px' }}>
       <Box style={iconContainer}>
-        <img src={logo} style={logoStyle} />
+        {props.deployView && (
+          <Link href='#' onClick={props.handleOnClick}><img src={logo} style={logoStyle} /></Link>
+        )}
+        {!props.deployView && (
+          <img src={logo} style={logoStyle} />
+        )}
       </Box>
     </Box >
   );
