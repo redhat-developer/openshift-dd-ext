@@ -29,7 +29,7 @@ export function CurrentContext() {
   };
 
   const handleChangeProject = () => {
-    showChangeProjecDialog();
+    showChangeProjectDialog();
   };
 
   const handleExpand = () => {
@@ -39,7 +39,7 @@ export function CurrentContext() {
   let showLoginDialog: () => void;
   let loginDialogClosed: (value: string) => void;
   let showChangeContextDialog: () => void;
-  let showChangeProjecDialog: () => void;
+  let showChangeProjectDialog: () => void;
 
   const installDialog = (showDialogHandler: () => void) => {
     showLoginDialog = showDialogHandler;
@@ -50,7 +50,7 @@ export function CurrentContext() {
   }
 
   const installChangeProjectDialog = (showDialogHandler: () => void) => {
-    showChangeProjecDialog = showDialogHandler;
+    showChangeProjectDialog = showDialogHandler;
   }
 
   async function loadContext(): Promise<void> {
