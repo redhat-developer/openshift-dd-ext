@@ -62,7 +62,7 @@ export function ChangeContext(props: LoginDialogProps) {
         <DialogContent>
           <DialogContentText paddingBottom="16px">
             <Typography
-              component="div"
+              component="span"
               variant="body1"
               color="text.primary">
               Select Context from the list below
@@ -78,23 +78,23 @@ export function ChangeContext(props: LoginDialogProps) {
               {contexts.map((item: { name: string }, index: number) => {
                 const contextUiData = loadContextUiData(kubeConfig, item.name);
                 return (contextUiData !== UnknownKubeContext) && (
-                  <>
-                    <ListItemButton alignItems="flex-start" selected={item.name === selectedContext} onClick={() => setSelectedContext(item.name)} key={item.name}>
-                      <ListItemText
-                        primary={
-                          <Typography
-                            sx={{
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              padding: "2px"
-                            }}
-                            variant="h6">
-                            {item.name}
-                          </Typography>
-                        }
-                        secondary={
-                          <React.Fragment>
+                  <React.Fragment key={index}>
+                    <ListItem>
+                      <ListItemButton alignItems="flex-start" selected={item.name === selectedContext} onClick={() => setSelectedContext(item.name)}>
+                        <ListItemText
+                          primary={
+                            <Typography
+                              sx={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                padding: "2px"
+                              }}
+                              variant="h6">
+                              {item.name}
+                            </Typography>
+                          }
+                          secondary={
                             <Typography
                               sx={{ display: 'inline' }}
                               component="div"
@@ -105,12 +105,12 @@ export function ChangeContext(props: LoginDialogProps) {
                               <div><b>Username:</b> {contextUiData.user}</div>
                               <div><b>Project:</b> {contextUiData.project}</div>
                             </Typography>
-                          </React.Fragment>
-                        }
-                      />
-                    </ListItemButton>
+                          }
+                        />
+                      </ListItemButton>
+                    </ListItem>
                     {(index + 1 < contexts.length) && (<Divider variant="fullWidth" />)}
-                  </>
+                  </React.Fragment>
                 )
               })
               }

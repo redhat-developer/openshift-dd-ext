@@ -93,7 +93,7 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
         <DialogContent>
           <DialogContentText paddingBottom="16px">
             <Typography
-              component="div"
+              component="span"
               variant="body1"
               color="text.primary">
               Select Project from the list below
@@ -108,12 +108,13 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
               {projects.map((project, index) => {
                 return (
-                  <>
-                    <ListItemButton alignItems="flex-start" selected={project === selectedProject} onClick={() => handleSelect(project)} key={project}>
-                      <ListItemText
-                        primary={
-                          <React.Fragment>
+                  <React.Fragment key={index}>
+                    <ListItem>
+                      <ListItemButton alignItems="flex-start" selected={project === selectedProject} onClick={() => handleSelect(project)}>
+                        <ListItemText
+                          primary={
                             <Typography
+                              component="span"
                               sx={{
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
@@ -121,12 +122,12 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
                               }}>
                               {project}
                             </Typography>
-                          </React.Fragment>
-                        }
-                      />
-                    </ListItemButton>
+                          }
+                        />
+                      </ListItemButton>
+                    </ListItem>
                     {(index + 1 < projects.length) && (<Divider variant="fullWidth" />)}
-                  </>
+                  </React.Fragment>
                 )
               })
               }
