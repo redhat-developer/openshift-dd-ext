@@ -124,12 +124,12 @@ export function LoginDialog(props: LoginDialogProps) {
   };
 
   const handleClusterPaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
-    event.preventDefault();
     const content = event.clipboardData.getData('text');
     // eg.
     // oc login https://api.rh-us-east-1.openshift.com --token=FooC8x6u1R591NIYhgNMbdfOUjg8-aD-yt-sQVwcS8Y
     const loginCommand = parseOcLoginCommand(content);
     if (loginCommand) {
+      event.preventDefault();
       const clusterValidationError = validateUrl(loginCommand.cluster).length > 0;
       setCluster({
         value: loginCommand.cluster,
@@ -159,6 +159,18 @@ export function LoginDialog(props: LoginDialogProps) {
       return {
         cluster: match.groups.cluster,
         token: match.groups.token
+      }
+    } else {
+      // try to find --token and --server parts 
+      const tokenPattern = /.* --token=(?<token>\S*).*/;
+      const serverPattern = /.* --server=(?<cluster>\S*).*/;
+      const tokenMatch = command.match(tokenPattern);
+      const serverMatch = command.match(serverPattern);
+      if (tokenMatch?.groups && serverMatch?.groups) {
+        return {
+          cluster: serverMatch.groups.cluster,
+          token: tokenMatch?.groups.token
+        }
       }
     }
     return undefined;
