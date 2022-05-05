@@ -40,7 +40,7 @@ LABEL org.opencontainers.image.title="OpenShift" \
         } \
     ]" \
     com.docker.extension.detailed-description=" \
-        <h1>Deploy to OpenShift</h1> \
+        <h1>Deploy Docker Images to OpenShift</h1> \
         <p>The extension provides an easy way to deploy docker image from docker hub to OpenShift cluster. \
         Noteworthy features are: \
         <ul> \
