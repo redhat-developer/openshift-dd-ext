@@ -41,7 +41,7 @@ LABEL org.opencontainers.image.title="OpenShift" \
     ]" \
     com.docker.extension.detailed-description=" \
         <p>The Red Hat OpenShift extension enables developers who are working with OpenShift to deploy and test their apps from Docker Desktop with ease.  \
-        You choose your target environment, the project you want to deploy to, you select the image of your app from the ones available on Docker Desktop and it deploys the application on OpenShift.  \  
+        You choose your target environment, the project you want to deploy to, you select the image of your app from the ones available on Docker Desktop and it deploys the application on OpenShift. \
         Capabilities provided at the moment: \
         <ul> \
         <li> <b>Detection of Kubernetes environments:</b> scan your defined kubeconfigs on your local environment and preselect your current default kubernetes environment. You can also easily switch from one environment to another one. </li> \
@@ -53,7 +53,7 @@ LABEL org.opencontainers.image.title="OpenShift" \
         </p> \
         <p><h2>How do I learn more and get involved?</h2> \
         Please submit questions, issues and feedbacks directly on the extension's repository: <a href="https://github.com/redhat-developer/openshift-dd-ext">OpenShift Docker Desktop Extension Repository</a> \
-        </p> 
+        </p> \ 
     "
 RUN apt update && apt install curl unzip -y
 ENV OC_VERSION=4.10.9
