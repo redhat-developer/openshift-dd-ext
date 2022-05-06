@@ -6,11 +6,22 @@ COPY client/yarn.lock /app/client/yarn.lock
 ARG TARGETARCH
 RUN yarn config set cache-folder /usr/local/share/.cache/yarn-${TARGETARCH}
 RUN yarn config set network-timeout 120000
-
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn-${TARGETARCH} yarn
 # install
 COPY client /app/client
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn-${TARGETARCH} yarn build
+
+FROM debian:stable-slim AS tools-download
+RUN apt update && apt install curl unzip -y
+ENV OC_VERSION=4.10.9
+ENV OC_DOWNLOAD_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}
+WORKDIR /tools/linux
+RUN curl ${OC_DOWNLOAD_URL}/openshift-client-linux.tar.gz | tar -xz
+WORKDIR /tools/windows
+RUN curl ${OC_DOWNLOAD_URL}/openshift-client-windows.zip -o client.zip && unzip client.zip && rm client.zip
+WORKDIR /tools/mac
+RUN curl ${OC_DOWNLOAD_URL}/openshift-client-mac.tar.gz | tar -xz
+WORKDIR /
 
 FROM debian:bullseye-slim
 LABEL org.opencontainers.image.title="OpenShift" \
@@ -55,16 +66,7 @@ LABEL org.opencontainers.image.title="OpenShift" \
         Please submit questions, issues and feedbacks directly on the extension's repository: <a href="https://github.com/redhat-developer/openshift-dd-ext">OpenShift Docker Desktop Extension Repository</a> \
         </p> \ 
     "
-RUN apt update && apt install curl unzip -y
-ENV OC_VERSION=4.10.9
-ENV OC_DOWNLOAD_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${OC_VERSION}
-WORKDIR /tools/linux
-RUN curl ${OC_DOWNLOAD_URL}/openshift-client-linux.tar.gz | tar -xz
-WORKDIR /tools/windows
-RUN curl ${OC_DOWNLOAD_URL}/openshift-client-windows.zip -o client.zip && unzip client.zip
-WORKDIR /tools/mac
-RUN curl ${OC_DOWNLOAD_URL}/openshift-client-mac.tar.gz | tar -xz
-WORKDIR /
 COPY openshift.svg .
 COPY metadata.json .
 COPY --from=client-builder /app/client/dist ui
+COPY --from=tools-download /tools tools
