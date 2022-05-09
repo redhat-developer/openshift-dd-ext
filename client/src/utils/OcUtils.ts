@@ -132,7 +132,7 @@ export async function readKubeConfig(): Promise<any> {
       console.log(`kube config:\n ${JSON.stringify(config)}`);
       resolve(config);
     }).catch((e) => {
-      reject(e);
+      handleError(reject, e);
     });
   });
 }
@@ -148,7 +148,7 @@ export async function loadProjectNames(): Promise<string[]> {
       console.log(`projects/namespaces:\n ${JSON.stringify(projects.items)}`);
       resolve(projects.items.map((project: any) => project.metadata.name));
     }).catch((e) => {
-      reject(e.stderr);
+      handleError(reject, e);
     });
   });
 }
@@ -169,7 +169,7 @@ export async function setCurrentContextProject(projectName: string) {
       console.log(`current project set to ${projectName}`);
       resolve(projectName);
     }).catch((e) => {
-      reject(e.stderr);
+      handleError(reject, e);
     });
   });
 }
@@ -185,7 +185,7 @@ export async function isOpenshift() {
       console.log(`The cluster is${apiFound ? " " : " not "}OpenShift`);
       resolve(apiFound);
     }).catch((e) => {
-      reject(e.stderr);
+      handleError(reject, e);
     });
   });
 }
@@ -200,7 +200,7 @@ export async function setCurrentContext(contextName: string): Promise<void> {
       console.log(`The current-context set to ${contextName}.`);
       resolve();
     }).catch((e) => {
-      reject(e.stderr);
+      handleError(reject, e);
     });
   });
 }
@@ -215,7 +215,7 @@ export async function login(cluster: string, username: string, password: string)
       console.log(`logged into cluster ${cluster}  with username ${username}.`);
       resolve();
     }).catch((e) => {
-      reject(e.stderr);
+      handleError(reject, e);
     });
   });
 }
@@ -230,7 +230,7 @@ export async function loginWithToken(cluster: string, token: string): Promise<vo
       console.log(`logged into cluster ${cluster}  with token ${token}.`);
       resolve();
     }).catch((e) => {
-      reject(e.stderr);
+      handleError(reject, e);
     });
   });
 }
@@ -242,7 +242,7 @@ export async function createProject(name: string): Promise<void> {
       throw new Error(result.stderr);
     }
     console.info(`Created project '${name}'.`)
-  });
+  })
 }
 
 export async function listProjects(): Promise<string[]> {
@@ -262,3 +262,12 @@ export async function listProjects(): Promise<string[]> {
   return result ? result : []; // check for null required because of optional chaining
 }
 
+function handleError(reject: (reason?: any) => void, e: any) {
+  if (e.stderr) {
+    reject(e.stderr);
+  } else if (e.stdout) {
+    reject(e.stdout);
+  } else {
+    reject(e);
+  }
+}

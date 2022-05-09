@@ -34,6 +34,7 @@ export function ChangeContext(props: LoginDialogProps) {
   const handleChange = () => {
     setOpen(false);
     setCurrentContext(selectedContext).catch((error) => {
+      console.error(error);
       ddClient.desktopUI.toast.error('Setting current context failed.');
     }).then(() => {
       props.onContextChange();

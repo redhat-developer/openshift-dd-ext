@@ -11,6 +11,7 @@ import validator from 'validator';
 import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Box, Tab, Tabs } from '@mui/material';
+import { getMessage } from '../utils/ErrorUtils';
 
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
@@ -81,7 +82,8 @@ export function LoginDialog(props: LoginDialogProps) {
       ddClient.desktopUI.toast.success(`Sucessfully logged into cluster ${cluster.value}`);
       props.onLogin();
     }).catch((error) => {
-      ddClient.desktopUI.toast.error(error);
+      console.error(error);
+      ddClient.desktopUI.toast.error(getMessage(error));
     });
 
     handleClose();
