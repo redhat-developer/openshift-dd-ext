@@ -102,7 +102,7 @@ export function CurrentContext() {
                   <EditIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title='Expand context details' placement='bottom-end'>
+              <Tooltip title={expanded?"Collapse context details":"Expand context details"} placement='bottom-end' >
                 <IconButton
                   onClick={handleExpand}>
                   {(expanded) && (
