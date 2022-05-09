@@ -33,4 +33,4 @@ See API doc here: https://github.com/docker/extensions-sdk/tree/main/docs/dev/ap
 
 ## License
 
-MIT License, see [LICENSE](LICENSE) for mor information.
+MIT License, see [LICENSE](LICENSE) for more information.
