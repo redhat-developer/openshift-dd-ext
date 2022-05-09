@@ -80,6 +80,8 @@ export function CurrentContext() {
     }
   }
 
+  const subHeader = (currentContext === UnknownKubeContext)? "No context selected" : "Current context";
+
   return (
     <>
       <Card>
@@ -116,7 +118,7 @@ export function CurrentContext() {
           title={
             currentContext.name
           }
-          subheader="Current context"
+          subheader={subHeader} 
         />
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
           <Box>Server: <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></Box>
