@@ -11,6 +11,7 @@ import { Backdrop, Box, CircularProgress, Divider, List, ListItem, ListItemAvata
 import { loadKubeContext, loadProjectNames, setCurrentContextProject } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { NewProjectDialog } from './newProject';
+import { getMessage } from '../utils/ErrorUtils';
 
 export interface ChangeProjectDialogProps {
   install: (showDialog: () => void) => void;
@@ -34,6 +35,7 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
   const handleChange = () => {
     setChanging(true);
     setCurrentContextProject(selectedProject).catch((error) => {
+      console.error(error);
       ddClient.desktopUI.toast.error('Setting current project for current context failed.');
     }).then(() => {
       setChanging(false);
@@ -58,7 +60,8 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
           setLoading(false);
         }, 1500);
       }).catch((error) => {
-        ddClient.desktopUI.toast.error(error);
+        console.error(error);
+        ddClient.desktopUI.toast.error(getMessage(error));
         setOpen(false);
       });
     });

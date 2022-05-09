@@ -12,6 +12,7 @@ import { createProject, loadServerUrls, login } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { validateLength, validateResourcePattern } from '../utils/ValidationUtils';
 import { minHeight } from '@mui/system';
+import { getMessage } from '../utils/ErrorUtils';
 
 interface LoginDialogProps {
   existingProjects?: string[];
@@ -63,7 +64,8 @@ export function NewProjectDialog(props: LoginDialogProps) {
       ddClient.desktopUI.toast.success(`New Project '${name.value}' created.`);
       props.onCreate();
     }).catch((error) => {
-      ddClient.desktopUI.toast.error(error);
+      console.error(error);
+      ddClient.desktopUI.toast.error(getMessage(error));
     });
     handleClose();
   };
