@@ -80,7 +80,7 @@ export function CurrentContext() {
     }
   }
 
-  const subHeader = (currentContext === UnknownKubeContext)? "No context selected" : "Current context";
+  const subHeader = (currentContext === UnknownKubeContext) ? "No context selected" : "Current context";
 
   return (
     <>
@@ -102,7 +102,7 @@ export function CurrentContext() {
                   <EditIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title={expanded?"Collapse context details":"Expand context details"} placement='bottom-end' >
+              <Tooltip title={expanded ? "Collapse context details" : "Expand context details"} placement='bottom-end' >
                 <IconButton
                   onClick={handleExpand}>
                   {(expanded) && (
@@ -118,12 +118,12 @@ export function CurrentContext() {
           title={
             currentContext.name
           }
-          subheader={subHeader} 
+          subheader={subHeader}
         />
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
-          <Box>Server: <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></Box>
-          <Box>User: {currentContext.user}</Box>
-          <Box>Project: {currentContext.project}
+          <Box><b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></Box>
+          <Box><b>User:</b> {currentContext.user}</Box>
+          <Box><b>Project:</b> {currentContext.project}
             {(currentContext !== UnknownKubeContext) && (
               <Tooltip title='Select a different project to deploy to'>
                 <Button sx={{ padding: 0 }} size="small" onClick={handleChangeProject}>Change</Button>
