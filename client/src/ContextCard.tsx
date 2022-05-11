@@ -14,7 +14,7 @@ import { ChangeProject } from './dialogs/changeProject';
 import { useRecoilState } from 'recoil';
 import { currentContextState } from './state/currentContextState';
 
-export function CurrentContext() {
+export default function CurrentContext() {
   const [loading, setLoading] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
   const [expanded, setExpanded] = useState(false);

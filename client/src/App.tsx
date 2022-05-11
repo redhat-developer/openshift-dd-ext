@@ -1,16 +1,16 @@
-import { Box, Button, Typography, Card, CardMedia } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { CurrentContext } from './ContextCard';
-import { DeploymentOutput } from './DeploymentOutput';
+import { Box } from '@mui/material';
+import { useState } from 'react';
+import CurrentContext from './ContextCard';
+import DeploymentOutput from './DeploymentOutput';
 import Header from './Header';
-
-import { ImageSelector } from './imageSelector';
+import Welcome from './Welcome';
+import Logo from './logo';
+import ImageSelector from './imageSelector';
 import { ISelectedImage } from './models/IDockerImage';
 import { deployImage, exposeService, getAppName, getProjectRoute } from './utils/OcUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
-import Logo from './logo';
 import { getLocalImageInspectionJson } from './utils/DockerUtils';
-import { useLocalState, useSessionState } from './hooks/useStorageState';
+import { useLocalState } from './hooks/useStorageState';
 
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
@@ -66,20 +66,17 @@ export function App() {
 
   const [deployView, setDeployView] = useLocalState('deployView', false);
 
-  const handleDeployPage = () => {
+  const showDeployPage = () => {
     setDeployView(true);
   }
 
-  const handleOnClick = () => {
+  const showWelcomePage = () => {
     setDeployView(false);
   }
 
-
-  // TODO handle kube context and then
   // TODO: handle oc login (detect login / display instructions)
-  // TODO: add openshift project selector
   // TODO: handle image no available from openshift cluster (either push or display instructions)
-  // TODO: handle deployment failures (project doesn't exist, service already exists, etc.)
+  // TODO: better handle deployment failures (project doesn't exist, service already exists, etc.)
   return (
     <Box
       display="flex"
@@ -90,25 +87,9 @@ export function App() {
       padding="10px"
       boxShadow={shadow}
     >
-      <Logo handleOnClick={handleOnClick} deployView={deployView} />
+      <Logo clickable={deployView} onClick={showWelcomePage} />
       {!deployView && (
-        <>
-          <Box width="100%" alignContent="center" display="flex" flexDirection="column" flexWrap="nowrap" alignItems="center">
-            <Typography variant="h6" component="div">
-              Red Hat® OpenShift® is an enterprise-ready Kubernetes container platform built for an open hybrid cloud strategy.
-              It provides a consistent application platform to manage hybrid cloud, multicloud, and edge deployments.
-            </Typography>
-            <Typography variant='body1'>
-              <Button variant="contained" size="large" style={{ margin: '30px 0px 30px 0px' }} onClick={handleDeployPage}>Deploy to OpenShift</Button>
-            </Typography>
-            <Box minWidth={800} minHeight={450} display="flex">
-              <CardMedia
-                component="iframe"
-                image="https://www.youtube.com/embed/xEofcsd6HGg"
-              />
-            </Box>
-          </Box>
-        </>
+        <Welcome onButtonClick={showDeployPage} />
       )}
       {deployView && (
         <>

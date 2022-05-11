@@ -1,10 +1,9 @@
 import { Box, Link, Typography } from '@mui/material';
 import logo from './images/logo.png';
-import { useLocalState, useSessionState } from './hooks/useStorageState';
 
 export interface LogoProps {
-  handleOnClick: () => void;
-  deployView: boolean;
+  onClick: () => void;
+  clickable: boolean;
 }
 
 export default function Logo(props: LogoProps) {
@@ -24,10 +23,10 @@ export default function Logo(props: LogoProps) {
   return (
     <Box style={{ textAlign: 'center', marginBottom: '20px' }}>
       <Box style={iconContainer}>
-        {props.deployView && (
-          <Link href='#' onClick={props.handleOnClick}><img src={logo} style={logoStyle} /></Link>
+        {props.clickable && (
+          <Link href='#' onClick={props.onClick}><img src={logo} style={logoStyle} /></Link>
         )}
-        {!props.deployView && (
+        {!props.clickable && (
           <img src={logo} style={logoStyle} />
         )}
       </Box>

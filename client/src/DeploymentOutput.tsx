@@ -4,9 +4,9 @@ interface DeploymentOutputProps {
   deployResponse: string;
 }
 
-export function DeploymentOutput(props: DeploymentOutputProps) {
+export default function DeploymentOutput(props: DeploymentOutputProps) {
 
-  let output = props?.deployResponse;
+  const output = props?.deployResponse;
 
   return (
     <Box

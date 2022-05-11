@@ -20,7 +20,7 @@ interface ImageOption {
   readonly label: string;
 }
 
-export function ImageSelector(props?: ImageSelectorProps) {
+export default function ImageSelector(props?: ImageSelectorProps) {
   const onDeployClick = props?.onDeployClick;
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(true);
