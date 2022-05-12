@@ -9,6 +9,8 @@ const ocPathLinux = 'oc' //tools/linux/oc';
 const ocPath = getEmbeddedOcPath();
 const ddClient = createDockerDesktopClient();
 
+export const UNSET_VALUE = 'Not set';
+
 export function getEmbeddedOcPath() {
   if (isWindows()) {
     return ocPathWin;
@@ -82,12 +84,12 @@ function loadUserName(userItem: any) {
   if (segments?.length && segments.length > 1) {
     return segments[0];
   }
-  return segments ? segments : 'Not set';
+  return segments ? segments : UNSET_VALUE;
 }
 
 export function loadContextUiData(kubeConfig: any, contextName: string): KubeContext {
   const context = kubeConfig.contexts.find((c: any) => c.name === contextName);
-  const project = context.context.namespace ? context.context.namespace : 'not set';
+  const project = context.context.namespace ? context.context.namespace : UNSET_VALUE;
   //Getting the username will be tricky since this happens:
   // oc get user
   // Error from server (Forbidden): users.user.openshift.io is forbidden: User "100210525024987209584" cannot list users.user.openshift.io at the cluster scope: no RBAC policy matched

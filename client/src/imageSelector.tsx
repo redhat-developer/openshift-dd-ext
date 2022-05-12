@@ -10,6 +10,7 @@ import { openInBrowser, toast } from "./utils/UIUtils";
 import { useRecoilState } from "recoil";
 import { currentContextState } from "./state/currentContextState";
 import { UnknownKubeContext } from "./models/KubeContext";
+import { UNSET_VALUE } from "./utils/OcUtils";
 
 interface ImageSelectorProps {
   onDeployClick?: (image: ISelectedImage) => void;
@@ -80,7 +81,9 @@ export default function ImageSelector(props?: ImageSelectorProps) {
     if (currentContext === UnknownKubeContext && !selectedImage) {
       return <span>Select a context and an image to deploy</span>;
     } else if (currentContext === UnknownKubeContext) {
-      return <span>Select a context to deploy</span>;
+      return <span>Select a context to deploy to</span>;
+    } else if (currentContext.project === UNSET_VALUE) {
+      return <span>Select a project to deploy to</span>;
     } else if (!selectedImage) {
       return <span>Select an image to deploy</span>;
     }
