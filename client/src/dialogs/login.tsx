@@ -10,8 +10,10 @@ import Autocomplete from '@mui/material/Autocomplete';
 import validator from 'validator';
 import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { Box, Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs, Tooltip } from '@mui/material';
 import { getMessage } from '../utils/ErrorUtils';
+import { openInBrowser } from '../utils/UIUtils';
+import DevSandBoxButton from '../DevSandBoxButton';
 
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
@@ -299,6 +301,8 @@ export function LoginDialog(props: LoginDialogProps) {
           </div>
         </DialogContent>
         <DialogActions sx={{ padding: "0 24px 20px 24px" }}>
+          <DevSandBoxButton />
+          <div style={{ flex: '1 0 0' }} />
           <Button variant="outlined" onClick={handleClose}>Cancel</Button>
           <Button variant="contained" disabled={!isValid()} onClick={handleLogin}>Login</Button>
         </DialogActions>
