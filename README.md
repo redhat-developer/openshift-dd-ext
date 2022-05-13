@@ -2,6 +2,8 @@
 
 The _Red Hat OpenShift extension for Docker Desktop_ enables developers who are working with [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift) to deploy and test their applications from Docker Desktop with ease.
 
+If you don't have an OpenShift cluster, you can get a free private cluster, available for 30-days, with the [Developer Sandbox for Red Hat OpenShift](https://red.ht/3l2o59m).
+
 You choose your target environment, the project you want to deploy to, you select the image of your app from the ones available on Docker Desktop and it deploys the application on OpenShift.
 
 ![Image deployed to OpenShift](images/deploy-page-image-deployed.png)
@@ -19,12 +21,12 @@ Capabilities provided at the moment:
 See API doc here: https://github.com/docker/extensions-sdk/tree/main/docs/dev/api
 
 - Build with `make build-extension`
-- Install extension with `make install-extension`
+- Install the extension with `make install-extension`
+- Run the extension in Dev mode with `make start-dev-extension`
+    * changes to React code will be reflected in the UI on file save automatically.
+- To stop Dev mode, run `make stop-dev-extension`
+- When not in Dev mode, update the extension with `make update-extension`
 - Uninstall extension with `make uninstall-extension`
-- start local web server with `cd client; yarn start`
-- make extension use local web server with `docker extension dev ui-source redhatdeveloper/openshift-dd-ext http://localhost:3000`
-- close and reopen Docker dashboard.
-- changes to React code will be reflected in the UI on file save automatically.
 
 ## Feedback
 

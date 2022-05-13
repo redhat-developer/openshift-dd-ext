@@ -62,6 +62,9 @@ LABEL org.opencontainers.image.title="OpenShift" \
         <li> <b>Deployment of container image:</b> container image gets deployed by building the resources needed with the automatic creation of the route to expose the application outside of the cluster. Once deployed, the application opens in a new browser tab. </li> \
         </ul> \
         </p> \
+        <p><h2>Need an OpenShift cluster?</h2> \
+        You can get a free, private OpenShift cluster, available for 30-days, with the [Developer Sandbox for Red Hat OpenShift](https://red.ht/3l2o59m). \
+        </p> \
         <p><h2>How do I learn more and get involved?</h2> \
         Please submit questions, issues and feedbacks directly on the extension's repository: <a href="https://github.com/redhat-developer/openshift-dd-ext">OpenShift Docker Desktop Extension Repository</a> \
         </p> \ 

@@ -31,6 +31,9 @@ start-dev-extension: ## Enable debug and ui-source
 	docker extension dev ui-source redhatdeveloper/openshift-dd-ext:latest http://localhost:3000
 	yarn --cwd ./client start
 
+stop-dev-extension: ## Reset dev mode
+	docker extension dev reset redhatdeveloper/openshift-dd-ext:latest
+
 prepare-buildx: ## Create buildx builder for multi-arch build, if not exists
 	docker buildx inspect $(BUILDER) || docker buildx create --name=$(BUILDER) --driver=docker-container --driver-opt=network=host
 
