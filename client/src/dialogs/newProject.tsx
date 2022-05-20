@@ -6,12 +6,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Autocomplete from '@mui/material/Autocomplete';
-import validator from 'validator';
-import { createProject, loadServerUrls, login } from '../utils/OcUtils';
+import { createProject } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { validateLength, validateResourcePattern } from '../utils/ValidationUtils';
-import { minHeight } from '@mui/system';
 import { getMessage } from '../utils/ErrorUtils';
 
 interface LoginDialogProps {

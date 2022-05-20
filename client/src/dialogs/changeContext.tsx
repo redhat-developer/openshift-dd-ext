@@ -9,7 +9,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import * as React from 'react';
 import { UnknownKubeContext } from '../models/KubeContext';
 import { loadContextUiData, readKubeConfig, setCurrentContext } from '../utils/OcUtils';
-import { LoginDialog } from './login';
 
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;

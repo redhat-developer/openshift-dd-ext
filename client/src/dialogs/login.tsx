@@ -12,7 +12,6 @@ import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Box, Tab, Tabs, Tooltip } from '@mui/material';
 import { getMessage } from '../utils/ErrorUtils';
-import { openInBrowser } from '../utils/UIUtils';
 import DevSandBoxButton from '../DevSandBoxButton';
 
 interface LoginDialogProps {
