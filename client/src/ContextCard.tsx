@@ -133,7 +133,7 @@ export default function CurrentContext() {
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
-      <ChangeContext install={installChangeContextDialog} onContextChange={loadContext} />
+      <ChangeContext install={installChangeContextDialog} onContextChange={loadContext} showLoginDialog={handleLogin} />
       <ChangeProject install={installChangeProjectDialog} onProjectChange={loadContext} />
     </>
   );

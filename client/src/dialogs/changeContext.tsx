@@ -14,6 +14,7 @@ import { LoginDialog } from './login';
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
   onContextChange: () => void;
+  showLoginDialog: () => void;
 }
 
 export function ChangeContext(props: LoginDialogProps) {
@@ -54,17 +55,10 @@ export function ChangeContext(props: LoginDialogProps) {
 
   const openLoginPage = () => {
     setOpen(false);
-    showLoginDialog();
+    props.showLoginDialog();
   }
 
   props.install(handleOpen);
-
-
-  let showLoginDialog: () => void;
-
-  const installLoginDialog = (showDialogHandler: () => void) => {
-    showLoginDialog = showDialogHandler;
-  }
 
   const ctxDescription = contexts.length > 0 ? 'Select Context from the list below' : 'No context available';
 
@@ -139,7 +133,6 @@ export function ChangeContext(props: LoginDialogProps) {
           <Button variant="contained" disabled={loading || !kubeConfig || kubeConfig["current-context"] === selectedContext} onClick={handleChange}>Change</Button>
         </DialogActions>
       </Dialog>
-      <LoginDialog install={installLoginDialog} onLogin={() => { props.onContextChange() }} />
     </div>
   );
 }
