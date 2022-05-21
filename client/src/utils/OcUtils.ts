@@ -54,7 +54,7 @@ export async function exposeService(appName: string) {
 //TODO there must be a better way to get the route
 export async function getProjectRoute(appName: string): Promise<string | undefined> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["describe", "route"]).then(result => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["describe", "route", appName]).then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
