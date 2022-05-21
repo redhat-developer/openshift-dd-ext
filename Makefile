@@ -26,6 +26,8 @@ update-extension: build-extension ## Update the extension
 uninstall-extension: ## Uninstall the extension
 	docker extension uninstall $(IMAGE):$(TAG)
 
+reinstall-extension: uninstall-extension install-extension
+
 start-dev-extension: ## Enable debug and ui-source
 	docker extension dev debug redhatdeveloper/openshift-dd-ext:latest
 	docker extension dev ui-source redhatdeveloper/openshift-dd-ext:latest http://localhost:3000
