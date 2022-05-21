@@ -11,6 +11,7 @@ import { deployImage, exposeService, getAppName, getProjectRoute } from './utils
 import { openInBrowser, toast } from './utils/UIUtils';
 import { getLocalImageInspectionJson } from './utils/DockerUtils';
 import { useLocalState } from './hooks/useStorageState';
+import { waitOnUrl } from './utils/waitOnUrl';
 
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
@@ -47,11 +48,20 @@ export function App() {
       const route = await getProjectRoute(appName);
       if (route) {
         toast.success(`Deployed ${imageName} to ${route}.`);
-        //TODO wait for the route to be accessible before opening it?
-        //TODO or rather display a link?
-        openInBrowser(route);
-        output = output + '\nApplication is exposed as: ' + route;
+        output += '\nApplication is exposed as: ' + route;
+        output += '\nWaiting for ' + route + ' to be ready.\n'
         setDeployResponse(output);
+        await waitOnUrl(route, 20000, 1000, (out) => {
+          output += out;
+          setDeployResponse(output);
+        }).then(() => {
+          openInBrowser(route);
+          output += '\nApplication URL ${route} opened in browser';
+          setDeployResponse(output);
+        }).catch(() => {
+          output += `\nApplication URL ${route} has not got accessible after 20 seconds.`;
+          setDeployResponse(output);
+        });
       } else {
         toast.warning(`Deployed ${imageName} but no route was created.`);
       }
