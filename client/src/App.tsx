@@ -59,7 +59,7 @@ export function App() {
           output += '\nApplication URL ${route} opened in browser';
           setDeployResponse(output);
         }).catch(() => {
-          output += `\nApplication URL ${route} has not got accessible after 20 seconds.`;
+          output += `\nApplication URL ${route} is still not accessible after 20 seconds.`;
           setDeployResponse(output);
         });
       } else {
