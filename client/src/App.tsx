@@ -71,7 +71,9 @@ export function App() {
             output += `\n${isNotAccessibleMessage}`;
             toast.warning(isNotAccessibleMessage);
           } else {
-            output += `\nApplication URL ${route} is still not accessible after ${WAITING_ON_URL_TIMEOUT / 1000} seconds.`;
+            const isStillNotAccessibleMessage = `Application URL ${route} is still not accessible after ${WAITING_ON_URL_TIMEOUT / 1000} seconds.`;
+            output += `\n${isStillNotAccessibleMessage}`;
+            toast.warning(isStillNotAccessibleMessage);
           }
           setDeployResponse(output);
         });
