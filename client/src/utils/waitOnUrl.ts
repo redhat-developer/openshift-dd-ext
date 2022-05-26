@@ -4,19 +4,32 @@ export function waitOnUrl(url: string, timeout: number, interval: number, log = 
   let timeoutTimer: NodeJS.Timeout;
   let timedOut = false;
   let timeoutResolve: (...args: any) => any;
-  function _waitOnUrl(url: string, whenAvailable: (...args: any) => void) {
+  function _waitOnUrl(url: string, whenAvailable: (...args: any) => void, whenStatusNot503: (error: any) => void) {
     setTimeout(
       () => {
         void axios.get(url, {
-          timeout: interval
+          timeout: interval,
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          }
         }).then((value) => {
+          console.log(value);
           clearTimeout(timeoutTimer);
           timeoutResolve();
-          whenAvailable();
+          whenAvailable(value);
         }).catch((error) => {
-          if (timedOut) return;
-          log('.');
-          _waitOnUrl(url, whenAvailable);
+          if (!timedOut) {
+            if (error?.request?.status === 503) {
+              log('.');
+              _waitOnUrl(url, whenAvailable, whenStatusNot503);
+            } else {
+              clearTimeout(timeoutTimer);
+              timeoutResolve();
+              whenStatusNot503(error);
+            }
+          }
         });
       },
       interval
@@ -34,7 +47,7 @@ export function waitOnUrl(url: string, timeout: number, interval: number, log = 
   });
 
   const workerPromise = new Promise((resolve, reject) => {
-    _waitOnUrl(url, resolve);
+    _waitOnUrl(url, resolve, reject);
   });
 
   return Promise.all([

@@ -1,7 +1,7 @@
 IMAGE?=redhatdeveloper/openshift-dd-ext
 TAG?=latest
 CORS_PROXY_HOST=localhost
-CORS_PROXY_PORT=8080
+CORS_PROXY_PORT=9090
 
 BUILDER=buildx-multi-arch
 
