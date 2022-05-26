@@ -13,6 +13,8 @@ import { getLocalImageInspectionJson } from './utils/DockerUtils';
 import { useLocalState } from './hooks/useStorageState';
 import { waitOnUrl } from './utils/waitOnUrl';
 
+const WAITING_ON_URL_TIMEOUT = 20000;
+
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
 
@@ -51,15 +53,26 @@ export function App() {
         output += '\nApplication is exposed as: ' + route;
         output += '\nWaiting for ' + route + ' to be ready.\n'
         setDeployResponse(output);
-        await waitOnUrl(route, 20000, 1000, (out) => {
+        let waitRoute = route;
+        if (process.env.NODE_ENV === 'development') {
+          waitRoute = `${process.env.REACT_APP_CORS_PROXY_URL}/${route}`;
+        }
+        await waitOnUrl(`${waitRoute}`, WAITING_ON_URL_TIMEOUT, 1000, (out) => {
           output += out;
           setDeployResponse(output);
-        }).then(() => {
+        }).then((response) => {
           openInBrowser(route);
-          output += '\nApplication URL ${route} opened in browser';
+          output += `\nApplication URL ${route} opened in browser`;
           setDeployResponse(output);
-        }).catch(() => {
-          output += `\nApplication URL ${route} is still not accessible after 20 seconds.`;
+        }).catch((err) => {
+          if (err) {
+            console.log(err);
+            const isNotAccessibleMessage = `Application URL ${route} is not accessible.`;
+            output += `\n${isNotAccessibleMessage}`;
+            toast.warning(isNotAccessibleMessage);
+          } else {
+            output += `\nApplication URL ${route} is still not accessible after ${WAITING_ON_URL_TIMEOUT / 1000} seconds.`;
+          }
           setDeployResponse(output);
         });
       } else {
