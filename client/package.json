@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "cors-proxy": "node dev/cors-proxy.js"
   },
   "dependencies": {
     "@docker/docker-mui-theme": "^0.0.4",
@@ -16,6 +17,7 @@
     "@types/js-yaml": "^4.0.5",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "axios": "^0.27.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
@@ -30,6 +32,7 @@
     "@docker/extension-api-client-types": "^0.2.2",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
-    "@types/validator": "^13.7.2"
+    "@types/validator": "^13.7.2",
+    "cors-anywhere": "0.4.4"
   }
 }

@@ -1,5 +1,7 @@
 IMAGE?=redhatdeveloper/openshift-dd-ext
 TAG?=latest
+CORS_PROXY_HOST=localhost
+CORS_PROXY_PORT=9090
 
 BUILDER=buildx-multi-arch
 
@@ -31,7 +33,7 @@ reinstall-extension: uninstall-extension install-extension
 start-dev-extension: ## Enable debug and ui-source
 	docker extension dev debug redhatdeveloper/openshift-dd-ext:latest
 	docker extension dev ui-source redhatdeveloper/openshift-dd-ext:latest http://localhost:3000
-	yarn --cwd ./client start
+	CORS_PROXY_HOST=$(CORS_PROXY_HOST) CORS_PROXY_PORT=$(CORS_PROXY_PORT) yarn --cwd ./client run cors-proxy & REACT_APP_CORS_PROXY_URL="http://$(CORS_PROXY_HOST):$(CORS_PROXY_PORT)" yarn --cwd ./client start
 
 stop-dev-extension: ## Reset dev mode
 	docker extension dev reset redhatdeveloper/openshift-dd-ext:latest

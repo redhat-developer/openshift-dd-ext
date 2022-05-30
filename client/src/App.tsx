@@ -11,6 +11,9 @@ import { deployImage, exposeService, getAppName, getProjectRoute } from './utils
 import { openInBrowser, toast } from './utils/UIUtils';
 import { getLocalImageInspectionJson } from './utils/DockerUtils';
 import { useLocalState } from './hooks/useStorageState';
+import { waitOnUrl } from './utils/waitOnUrl';
+
+const WAITING_ON_URL_TIMEOUT = 20000;
 
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
@@ -47,11 +50,33 @@ export function App() {
       const route = await getProjectRoute(appName);
       if (route) {
         toast.success(`Deployed ${imageName} to ${route}.`);
-        //TODO wait for the route to be accessible before opening it?
-        //TODO or rather display a link?
-        openInBrowser(route);
-        output = output + '\nApplication is exposed as: ' + route;
+        output += '\nApplication is exposed as: ' + route;
+        output += '\nWaiting for ' + route + ' to be ready.\n'
         setDeployResponse(output);
+        let waitRoute = route;
+        if (process.env.NODE_ENV === 'development') {
+          waitRoute = `${process.env.REACT_APP_CORS_PROXY_URL}/${route}`;
+        }
+        await waitOnUrl(`${waitRoute}`, WAITING_ON_URL_TIMEOUT, 1000, (out) => {
+          output += out;
+          setDeployResponse(output);
+        }).then((response) => {
+          openInBrowser(route);
+          output += `\nApplication URL ${route} opened in browser`;
+          setDeployResponse(output);
+        }).catch((err) => {
+          if (err) {
+            console.log(err);
+            const isNotAccessibleMessage = `Application URL ${route} is not accessible.`;
+            output += `\n${isNotAccessibleMessage}`;
+            toast.warning(isNotAccessibleMessage);
+          } else {
+            const isStillNotAccessibleMessage = `Application URL ${route} is still not accessible after ${WAITING_ON_URL_TIMEOUT / 1000} seconds.`;
+            output += `\n${isStillNotAccessibleMessage}`;
+            toast.warning(isStillNotAccessibleMessage);
+          }
+          setDeployResponse(output);
+        });
       } else {
         toast.warning(`Deployed ${imageName} but no route was created.`);
       }
