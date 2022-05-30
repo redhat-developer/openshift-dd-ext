@@ -1,5 +1,4 @@
 import { Box, Typography } from '@mui/material';
-import logo from './images/logo.png';
 
 export default function Header() {
 

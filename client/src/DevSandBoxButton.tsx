@@ -1,5 +1,4 @@
 import { Button, Tooltip } from "@mui/material";
-import { CommonProps } from "@mui/material/OverridableComponent";
 import { openInBrowser } from "./utils/UIUtils";
 
 interface DevSandBoxButtonProps {
