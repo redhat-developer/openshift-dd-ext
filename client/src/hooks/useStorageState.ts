@@ -19,15 +19,12 @@ class UseStorageState {
   useStorage<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
     const [value, setValue] = useState(() => {
       const result = this.getStorageValue(key, defaultValue);
-      console.log('Hook getting default value:', result);
       return result;
     });
 
     useEffect(() => {
       // storing key/value pair
-      console.log('Storing value:', value)
       this.storage.setItem(key, JSON.stringify(value));
-      console.log('Value in storage:', this.storage.getItem(key));
     }, [key, value]);
 
     return [value, setValue];
