@@ -15,7 +15,7 @@ export default function DeploymentOutput(props: DeploymentOutputProps) {
       flexGrow={1}
       width="100%"
     >
-      <textarea style={{ height: '50%' }} value={output} readOnly />
+      <textarea style={{ height: '80%' }} value={output} readOnly />
     </Box>
   );
 }

@@ -103,7 +103,7 @@ export function NewProjectDialog(props: LoginDialogProps) {
             label="Project Name"
             type="text"
             fullWidth
-            variant="filled"
+            variant="outlined"
             margin="normal"
             required
             onChange={handleOnChange.bind(undefined, validateName, setName)}
