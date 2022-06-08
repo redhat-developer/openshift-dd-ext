@@ -264,6 +264,32 @@ export async function listProjects(): Promise<string[]> {
   return result ? result : []; // check for null required because of optional chaining
 }
 
+export async function getOpenShiftConsoleURL(context: KubeContext): Promise<string | undefined> {
+
+  if (!context.clusterUrl) {
+    return undefined;
+  }
+
+  return new Promise((resolve, reject) => {
+    //TODO: see if getting the console url from any context is doable
+    ddClient.extension?.host?.cli.exec(
+      ocPath,
+      ['get', 'configmaps', 'console-public', '-n', 'openshift-config-managed', '-o', 'jsonpath="{.data.consoleURL}"']
+    ).then((result) => {
+      let consoleURL: string | undefined;
+      if (result.stderr) {
+        console.error('stderr:', result.stderr);
+        reject(result.stderr);
+      } else {
+        consoleURL = result.stdout.trim();
+      }
+      resolve(consoleURL);
+    }).catch((e) => {
+      handleError(reject, e);
+    });
+  });
+}
+
 function handleError(reject: (reason?: any) => void, e: any) {
   if (e.stderr) {
     reject(e.stderr);

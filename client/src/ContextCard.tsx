@@ -1,43 +1,41 @@
-import { useEffect, useState } from 'react';
-import { loadKubeContext } from './utils/OcUtils';
-import { Card, CardHeader, CardContent, IconButton, List, ListItem, ListItemText, Box, Button, Tooltip } from "@mui/material";
+import { LoginRounded } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandLessRounded from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
-import { UnknownKubeContext } from './models/KubeContext';
-import { openInBrowser } from './utils/UIUtils';
-import { LoginDialog } from './dialogs/login';
-import { ChangeContext } from './dialogs/changeContext';
-import { EditRounded } from '@mui/icons-material';
-import { LoginRounded } from '@mui/icons-material';
-import { ChangeProject } from './dialogs/changeProject';
+import { Box, Button, Card, CardContent, CardHeader, IconButton, Tooltip } from "@mui/material";
+import { Suspense, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
+import ConsoleButton from './ConsoleButton';
+import { ChangeContext } from './dialogs/changeContext';
+import { ChangeProject } from './dialogs/changeProject';
+import { LoginDialog } from './dialogs/login';
+import { UnknownKubeContext } from './models/KubeContext';
 import { currentContextState } from './state/currentContextState';
+import { loadKubeContext } from './utils/OcUtils';
+import { openInBrowser } from './utils/UIUtils';
 
 export default function CurrentContext() {
   const [loading, setLoading] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
   const [expanded, setExpanded] = useState(false);
-
+  
   const handleLogin = () => {
     showLoginDialog();
   };
 
   const handleChangeContext = async () => {
     showChangeContextDialog();
-    await loadContext();
   };
 
   const handleChangeProject = () => {
     showChangeProjectDialog();
   };
 
-  const handleExpand = () => {
+  const toggleExpand = () => {
     setExpanded(!expanded);
   }
 
   let showLoginDialog: () => void;
-  let loginDialogClosed: (value: string) => void;
   let showChangeContextDialog: () => void;
   let showChangeProjectDialog: () => void;
 
@@ -88,6 +86,9 @@ export default function CurrentContext() {
         <CardHeader
           action={
             <>
+              <Suspense fallback="...">
+                <ConsoleButton />
+              </Suspense>
               <Tooltip title='Login to an OpenShift cluster' placement='bottom-end'>
                 <IconButton
                   aria-label="action"
@@ -104,7 +105,7 @@ export default function CurrentContext() {
               </Tooltip>
               <Tooltip title={expanded ? "Collapse context details" : "Expand context details"} placement='bottom-end' >
                 <IconButton
-                  onClick={handleExpand}>
+                  onClick={toggleExpand}>
                   {(expanded) && (
                     <ExpandLessRounded />
                   )}
