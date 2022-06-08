@@ -1,4 +1,4 @@
-import { Box, Link, Typography } from '@mui/material';
+import { Box, Link } from '@mui/material';
 import logo from './images/logo.png';
 
 export interface LogoProps {
@@ -11,8 +11,8 @@ export default function Logo(props: LogoProps) {
   // TODO use styles.
   const iconContainer = {
     height: 60,
-    marginBottom: '3em',
-    marginTop: '2em',
+    marginBottom: '1em',
+    marginTop: '0.5em',
     width: '100%',
   };
 
