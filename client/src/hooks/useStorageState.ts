@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+const PREFIX = "__openshift__/";
 class UseStorageState {
   storage: Storage;
 
@@ -9,7 +9,7 @@ class UseStorageState {
 
   getStorageValue<T>(key: string, defaultValue: T) {
     // getting stored value
-    const saved = this.storage.getItem(key);
+    const saved = this.getItem(key);
     if (saved) {
       return JSON.parse(saved) as T;
     }
@@ -24,11 +24,19 @@ class UseStorageState {
 
     useEffect(() => {
       // storing key/value pair
-      this.storage.setItem(key, JSON.stringify(value));
+      this.setItem(key, JSON.stringify(value));
     }, [key, value]);
 
     return [value, setValue];
   };
+
+  getItem(key: string) {
+    return this.storage.getItem(PREFIX + key);
+  }
+
+  setItem(key: string, value: string) {
+    return this.storage.setItem(PREFIX + key, value);
+  }
 }
 
 const useLocalStorage = new UseStorageState(localStorage);
