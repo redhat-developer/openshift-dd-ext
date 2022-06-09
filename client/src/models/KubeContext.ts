@@ -1,8 +1,8 @@
 export interface KubeContext {
-  name: string | undefined;
-  project: string | undefined;
-  clusterUrl: string | undefined;
-  user: string | undefined;
+  name?: string;
+  project?: string;
+  clusterUrl?: string;
+  user?: string;
 }
 
 export const UnknownKubeContext: KubeContext = {
