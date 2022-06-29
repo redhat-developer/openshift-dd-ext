@@ -28,6 +28,7 @@ export default function ImageSelector(props?: ImageSelectorProps) {
   const [images, setImages] = useState<Map<string, IDockerImage>>(new Map());
   const [imageOptions, setImageOptions] = useState<ImageOption[]>([]);
   const [selectedImage, setSelectedImage] = useState<ISelectedImage | null>(null);
+  const [selectedOption, setSelectedOption] = useState<ImageOption | null>(null);
   const [currentContext,] = useRecoilState(currentContextState);
 
   async function loadImages(): Promise<void> {
@@ -57,6 +58,7 @@ export default function ImageSelector(props?: ImageSelectorProps) {
 
   const handleRefresh = () => {
     setSelectedImage(null);
+    setSelectedOption(null);
     setLoading(true);
   }
 
@@ -73,9 +75,11 @@ export default function ImageSelector(props?: ImageSelectorProps) {
       const image = images.get(name);
       if (image) {
         setSelectedImage({ name, image });
+        setSelectedOption(imageOption);
       }
     } else {
       setSelectedImage(null);
+      setSelectedOption(null);
     }
   }
 
@@ -98,13 +102,10 @@ export default function ImageSelector(props?: ImageSelectorProps) {
         <div style={{ flex: '1 1 auto' }}>
           <Autocomplete
             size="small"
-            // noOptionsMessage={() => "No images found"}
             placeholder="Select an image to deploy"
-            // isClearable
-            // isSearchable
             options={imageOptions}
             onChange={handleSelection}
-            // value={imageOptions.filter(image => image.value === selectedImage?.name)}
+            value={selectedOption}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -115,7 +116,6 @@ export default function ImageSelector(props?: ImageSelectorProps) {
                 }}
               />
             )}
-
           />
         </div>
         <Tooltip title="Reload the list of local Docker images" placement='bottom-end'>
