@@ -1,19 +1,21 @@
 import { RefreshRounded } from "@mui/icons-material";
-import { Alert, Autocomplete, Button, Link, TextField, Tooltip } from "@mui/material";
+import { Autocomplete, Button, TextField, Tooltip } from "@mui/material";
 import { Box } from "@mui/system";
 import { Suspense, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import DeployButton from "./components/deployButton";
-import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
+import { IDockerImage } from "./models/IDockerImage";
 import { KubeContext, UnknownKubeContext } from "./models/KubeContext";
 import { currentContextState } from "./state/currentContextState";
+import { loginState } from "./state/loginState";
+import { selectedImageState } from "./state/selectedImageState";
 import { DeploymentMode } from "./utils/Deployer";
 import { getLocalImages } from "./utils/DockerUtils";
 import { UNSET_VALUE } from "./utils/OcUtils";
-import { openInBrowser, toast } from "./utils/UIUtils";
+import { toast } from "./utils/UIUtils";
 
 interface ImageSelectorProps {
-  onDeployClick?: (image: ISelectedImage, mode: number, context: KubeContext, registry?: string) => void;
+  onDeployClick?: (mode: number, context: KubeContext, registry?: string) => void;
 }
 
 interface ImageOption {
@@ -27,9 +29,10 @@ export default function ImageSelector(props?: ImageSelectorProps) {
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<Map<string, IDockerImage>>(new Map());
   const [imageOptions, setImageOptions] = useState<ImageOption[]>([]);
-  const [selectedImage, setSelectedImage] = useState<ISelectedImage | null>(null);
+  const [selectedImage, setSelectedImage] = useRecoilState(selectedImageState);
   const [selectedOption, setSelectedOption] = useState<ImageOption | null>(null);
   const [currentContext,] = useRecoilState(currentContextState);
+  const [loggedIn,] = useRecoilState(loginState);
 
   async function loadImages(): Promise<void> {
     const refreshing = !initialLoading;
@@ -57,14 +60,14 @@ export default function ImageSelector(props?: ImageSelectorProps) {
   }, [loading]);
 
   const handleRefresh = () => {
-    setSelectedImage(null);
+    setSelectedImage(undefined);
     setSelectedOption(null);
     setLoading(true);
   }
 
   const deploy = (mode: DeploymentMode, context: KubeContext, registry?: string): void => {
     if (selectedImage && onDeployClick) {
-      onDeployClick(selectedImage, mode, currentContext, registry);
+      onDeployClick(mode, currentContext, registry);
     }
   }
 
@@ -78,23 +81,12 @@ export default function ImageSelector(props?: ImageSelectorProps) {
         setSelectedOption(imageOption);
       }
     } else {
-      setSelectedImage(null);
+      setSelectedImage(undefined);
       setSelectedOption(null);
     }
   }
-
-  const deploymentText = () => {
-    if (currentContext === UnknownKubeContext && !selectedImage) {
-      return <span>Select a context and an image to deploy</span>;
-    } else if (currentContext === UnknownKubeContext) {
-      return <span>Select a context to deploy to</span>;
-    } else if (currentContext.project === UNSET_VALUE) {
-      return <span>Select a project to deploy to</span>;
-    } else if (!selectedImage) {
-      return <span>Select an image to deploy</span>;
-    }
-    return <>Deploying {selectedImage?.name} to project '{currentContext.project}' on <Link color="inherit" href="#" onClick={() => openInBrowser(currentContext.clusterUrl!!)}>{currentContext.clusterUrl}</Link></>;
-  }
+ 
+  const deployEnabled = currentContext !== UnknownKubeContext && loggedIn && currentContext.project !== UNSET_VALUE && selectedImage !== null;
 
   return (
     <>
@@ -129,15 +121,10 @@ export default function ImageSelector(props?: ImageSelectorProps) {
         <Suspense fallback={<Button size="large" variant="contained" style={{ marginLeft: '20px' }}>Loading options ...</Button>}>
         <Tooltip title="Deploy the selected image to OpenShift" placement='top-end'> 
           <span>
-            <DeployButton onDeployClick={deploy} disabled={!selectedImage}/>
+            <DeployButton onDeployClick={deploy} disabled={!deployEnabled}/>
           </span>
         </Tooltip>
         </Suspense>
-      </Box>
-      <Box marginBottom="15px">
-        <Alert variant="filled" severity="info">
-          {deploymentText()}
-        </Alert>
       </Box>
     </>
   );

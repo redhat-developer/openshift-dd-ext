@@ -4,21 +4,24 @@ import ExpandLessRounded from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
 import { Box, Button, Card, CardContent, CardHeader, IconButton, Tooltip } from "@mui/material";
 import { Suspense, useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import ConsoleButton from './components/consoleButton';
 import RegistryUrl from './components/registryUrl';
 import { ChangeContext } from './dialogs/changeContext';
 import { ChangeProject } from './dialogs/changeProject';
 import { LoginDialog } from './dialogs/login';
+import { useLocalState } from './hooks/useStorageState';
 import { UnknownKubeContext } from './models/KubeContext';
 import { currentContextState } from './state/currentContextState';
-import { loadKubeContext } from './utils/OcUtils';
+import { loginState } from './state/loginState';
+import { isLoggedIn, loadKubeContext } from './utils/OcUtils';
 import { openInBrowser } from './utils/UIUtils';
 
 export default function CurrentContext() {
   const [loading, ] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
-  const [expanded, setExpanded] = useState(false);
+  const setLoggedIn = useSetRecoilState(loginState);
+  const [expanded, setExpanded] = useLocalState("expandContextCard", false);
   
   const handleLogin = () => {
     showLoginDialog();
@@ -52,13 +55,18 @@ export default function CurrentContext() {
     showChangeProjectDialog = showDialogHandler;
   }
 
-  async function loadContext(): Promise<void> {
+  async function loadContext(checkLoginState = true): Promise<void> {
     const context = await loadKubeContext();
     setCurrentContext(context);
+    if (checkLoginState) {
+      setLoggedIn(await isLoggedIn());
+    }
   }
 
   const onLogin = () => {
-    loadContext();
+    //No need to check login state, we just logged in!
+    loadContext(false);
+    setLoggedIn(true);
   }
 
   useEffect(() => {
@@ -117,9 +125,7 @@ export default function CurrentContext() {
               </Tooltip>
             </>
           }
-          title={
-            currentContext.name
-          }
+          title={currentContext.name}
           subheader={subHeader}
         />
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
