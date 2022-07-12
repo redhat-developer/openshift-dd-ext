@@ -11,9 +11,11 @@ import { useRecoilState } from "recoil";
 import { currentContextState } from "./state/currentContextState";
 import { UnknownKubeContext } from "./models/KubeContext";
 import { UNSET_VALUE } from "./utils/OcUtils";
+import DeployButton from "./components/deployButton";
+import { DeploymentMode } from "./utils/Deployer";
 
 interface ImageSelectorProps {
-  onDeployClick?: (image: ISelectedImage) => void;
+  onDeployClick?: (image: ISelectedImage, mode: number) => void;
 }
 
 interface ImageOption {
@@ -62,9 +64,9 @@ export default function ImageSelector(props?: ImageSelectorProps) {
     setLoading(true);
   }
 
-  const deploy = (): void => {
+  const deploy = (mode: DeploymentMode): void => {
     if (selectedImage && onDeployClick) {
-      onDeployClick(selectedImage);
+      onDeployClick(selectedImage, mode);
     }
   }
 
@@ -125,9 +127,10 @@ export default function ImageSelector(props?: ImageSelectorProps) {
             </Button>
           </span>
         </Tooltip>
-        <Tooltip title="Deploy the selected image to OpenShift" placement='bottom-end'>
+        {/* Move tooltip to the top-end, so it doesn't overlap the drop-down menu */}
+        <Tooltip title="Deploy the selected image to OpenShift" placement='top-end'> 
           <span>
-            <Button size="large" style={{ marginLeft: '20px' }} variant="contained" onClick={deploy} disabled={!selectedImage}> Deploy </Button>
+            <DeployButton onDeployClick={deploy} disabled={!selectedImage}/>
           </span>
         </Tooltip>
       </Box>

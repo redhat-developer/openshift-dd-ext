@@ -1,5 +1,5 @@
 import { Box, Button, CardMedia, Typography } from "@mui/material";
-import DevSandBoxButton from "./DevSandBoxButton";
+import DevSandBoxButton from "./components/devSandBoxButton";
 import { openInBrowser } from "./utils/UIUtils";
 
 interface WelcomeProps {

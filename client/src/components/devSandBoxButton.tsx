@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "@mui/material";
-import { openInBrowser } from "./utils/UIUtils";
+import { openInBrowser } from "../utils/UIUtils";
 
 interface DevSandBoxButtonProps {
   size?: "medium" | "small" | "large" | undefined,

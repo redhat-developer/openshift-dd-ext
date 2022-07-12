@@ -8,7 +8,7 @@ export function waitOnUrl(url: string, timeout: number, interval: number, log = 
     setTimeout(
       () => {
         void axios.get(url, {
-          timeout: interval,
+          timeout: 3000,
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache',
@@ -21,6 +21,8 @@ export function waitOnUrl(url: string, timeout: number, interval: number, log = 
           whenAvailable(value);
         }).catch((error) => {
           if (!timedOut) {
+            //TODO: handle axios timeout. When the app is about to be available
+            // the request has a high chance of timing out. We should just wait some more.
             if (error?.request?.status === 503) {
               log('.');
               _waitOnUrl(url, whenAvailable, whenStatusNot503);
