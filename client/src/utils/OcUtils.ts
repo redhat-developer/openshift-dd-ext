@@ -36,7 +36,7 @@ export async function deployImage(dockerImage: string): Promise<string> {
   });
 };
 
-export async function exposeService(appName: string) {
+export async function exposeService(appName: string): Promise<string> {
   return new Promise((resolve, reject) => {
     ddClient.extension?.host?.cli.exec(ocPath, ["expose", "service/" + appName]).then(result => {
       if (result.stderr) {

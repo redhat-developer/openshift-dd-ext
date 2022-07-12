@@ -1,18 +1,18 @@
-import * as React from 'react';
+import { createDockerDesktopClient } from '@docker/extension-api-client';
+import { Box, Tab, Tabs } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import * as React from 'react';
 import validator from 'validator';
-import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
-import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { Box, Tab, Tabs, Tooltip } from '@mui/material';
+import DevSandBoxButton from '../components/devSandBoxButton';
 import { getMessage } from '../utils/ErrorUtils';
-import DevSandBoxButton from '../DevSandBoxButton';
+import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;

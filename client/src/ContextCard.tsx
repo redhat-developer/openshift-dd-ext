@@ -5,7 +5,7 @@ import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
 import { Box, Button, Card, CardContent, CardHeader, IconButton, Tooltip } from "@mui/material";
 import { Suspense, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import ConsoleButton from './ConsoleButton';
+import ConsoleButton from './components/consoleButton';
 import { ChangeContext } from './dialogs/changeContext';
 import { ChangeProject } from './dialogs/changeProject';
 import { LoginDialog } from './dialogs/login';

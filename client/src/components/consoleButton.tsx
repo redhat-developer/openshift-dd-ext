@@ -1,8 +1,8 @@
 import { OpenInBrowser } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import { useRecoilValue } from "recoil";
-import { currentDashboardState } from "./state/currentContextState";
-import { openInBrowser, toast } from "./utils/UIUtils";
+import { currentDashboardState } from "../state/currentContextState";
+import { openInBrowser, toast } from "../utils/UIUtils";
 
 export default function ConsoleButton() {
     const dashboardUrl = useRecoilValue(currentDashboardState);

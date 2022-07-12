@@ -1,5 +1,5 @@
 import { Box, Link } from '@mui/material';
-import logo from './images/logo.png';
+import logo from '../images/logo.png';
 
 export interface LogoProps {
   onClick: () => void;

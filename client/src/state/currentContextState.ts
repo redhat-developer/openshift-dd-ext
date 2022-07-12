@@ -5,7 +5,7 @@ import { getOpenShiftConsoleURL } from "../utils/OcUtils";
 
 export const currentContextState = atom({
   key: 'contextState',
-  default: UnknownKubeContext
+  default: UnknownKubeContext,
 });
 
 const CONSOLE_URLS = new Map<string, string>();
