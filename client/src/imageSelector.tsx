@@ -1,18 +1,16 @@
-import { Alert, Autocomplete, Button, Link, MenuItem, Paper, TextField, Tooltip } from "@mui/material";
+import { RefreshRounded } from "@mui/icons-material";
+import { Alert, Autocomplete, Button, Link, TextField, Tooltip } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
-import { getLocalImages } from "./utils/DockerUtils";
-import { useTheme } from '@mui/material';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
-import { RefreshRounded } from "@mui/icons-material";
-import { openInBrowser, toast } from "./utils/UIUtils";
 import { useRecoilState } from "recoil";
-import { currentContextState } from "./state/currentContextState";
-import { UnknownKubeContext } from "./models/KubeContext";
-import { UNSET_VALUE } from "./utils/OcUtils";
 import DeployButton from "./components/deployButton";
+import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
+import { UnknownKubeContext } from "./models/KubeContext";
+import { currentContextState } from "./state/currentContextState";
 import { DeploymentMode } from "./utils/Deployer";
+import { getLocalImages } from "./utils/DockerUtils";
+import { UNSET_VALUE } from "./utils/OcUtils";
+import { openInBrowser, toast } from "./utils/UIUtils";
 
 interface ImageSelectorProps {
   onDeployClick?: (image: ISelectedImage, mode: number) => void;
