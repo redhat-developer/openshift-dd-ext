@@ -1,4 +1,5 @@
-import { ConsoleListener, getLocalImageInspectionJson, pushImage } from "./DockerUtils";
+import { getLocalImageInspectionJson, pushImage } from "./DockerUtils";
+import ExecListener from "./execListener";
 import { deployImage, exposeService, getAppName, getProjectRoute } from "./OcUtils"
 
 export enum DeploymentMode {
@@ -16,10 +17,10 @@ export interface DeploymentListener {
 
 export class Deployer {
     
-    consoleListener: ConsoleListener;
+    execListener: ExecListener;
 
     constructor(private mode = DeploymentMode.deploy, private listener?: DeploymentListener){
-        this.consoleListener =  {
+        this.execListener =  {
             onOutput: (line: string) => {
               this.listener?.onMessage(line);
             },
@@ -52,15 +53,14 @@ export class Deployer {
 
     private async pushToHub(image: string): Promise<void> {
         this.listener?.onMessage(`Pushing ${image} to Docker Hub...`);
-        await pushImage(image, this.consoleListener);
+        await pushImage(image, this.execListener);
         this.listener?.onMessage(`Image ${image} pushed successfully`);
     }
 
     private async deployToOpenShift(image: string): Promise<void> {
         this.listener?.onMessage(`Deploying ${image} to OpenShift...`);
         try {
-            const result = await deployImage(image);
-            this.listener?.onMessage(result);
+            await deployImage(image, this.execListener);
         } catch (err) {
             this.listener?.onFailure(`Failed to deploy ${image}`, err);
             return;

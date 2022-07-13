@@ -1,10 +1,6 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { IDockerImage, IDockerImageInspectOutput } from "../models/IDockerImage";
-
-export interface ConsoleListener {
-    onOutput(line: string): void;
-    onError(line: string): void;
-}
+import ExecListener from "./execListener";
 
 const ddClient = createDockerDesktopClient();
 /**
@@ -41,7 +37,7 @@ export async function getLocalImageInspectionJson(tag: string): Promise<IDockerI
 }
 
 // Push the image to docker hub
-export async function pushImage(imageName: string, listener?: ConsoleListener): Promise<void> {
+export async function pushImage(imageName: string, listener?: ExecListener): Promise<void> {
   return new Promise((resolve, reject) => {
     ddClient.docker.cli.exec('image', ['push', imageName], {
         stream: {

@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
-import { useRecoilState } from 'recoil';
 import Logo from './components/logo';
 import CurrentContext from './ContextCard';
 import DeploymentOutput from './DeploymentOutput';
@@ -8,10 +7,8 @@ import Header from './Header';
 import { useLocalState } from './hooks/useStorageState';
 import ImageSelector from './imageSelector';
 import { ISelectedImage } from './models/IDockerImage';
-import { Deployer, DeploymentListener, DeploymentMode } from './utils/Deployer';
-import { ConsoleListener, getLocalImageInspectionJson, pushImage } from './utils/DockerUtils';
+import { Deployer, DeploymentMode } from './utils/Deployer';
 import { getMessage } from './utils/ErrorUtils';
-import { deployImage, exposeService, getAppName, getProjectRoute } from './utils/OcUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
 import { waitOnUrl } from './utils/waitOnUrl';
 import Welcome from './Welcome';

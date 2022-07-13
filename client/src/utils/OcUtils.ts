@@ -1,5 +1,6 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { KubeContext, UnknownKubeContext } from "../models/KubeContext";
+import ExecListener from "./execListener";
 import { isMacOS, isWindows } from "./PlatformUtils";
 
 const ocPathMac = 'oc' // 'tools/mac/oc';
@@ -21,20 +22,43 @@ export function getEmbeddedOcPath() {
   return ocPathLinux;
 }
 
-export async function deployImage(dockerImage: string): Promise<string> {
+export async function deployImage(dockerImage: string, listener: ExecListener): Promise<void> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["new-app", "--image", dockerImage]).then(result => {
-      if (result.stderr) {
-        console.log("stderr:" + result.stderr);
-        reject(result.stderr);
+    ddClient.extension?.host?.cli.exec(
+      ocPath, ["new-app", "--image", dockerImage], {
+        stream: {
+          onOutput(data) {
+            if (listener) {
+              if (data.stdout) {
+                console.log(data.stdout);
+                listener.onOutput(data.stdout);
+              } 
+              if (data.stderr) {
+                console.error(data.stderr);
+                listener.onError(data.stderr);
+              }
+            }
+          },
+          onError(error) {
+            console.error(error);
+            if (listener) {
+              listener.onError(error);
+            }
+          },
+          onClose(exitCode) {
+            console.log("oc new-app ended with exit code " + exitCode);
+            if (exitCode === 0) {
+              resolve();
+            } else {
+              reject("Failed to create a new app for "+dockerImage);
+            }
+          },
+          splitOutputLines: true
+        }
       }
-      console.log("stdout:" + result.stdout);
-      resolve(result.stdout);
-    }).catch((e) => {
-      reject(e);
-    });
+    );
   });
-};
+}
 
 export async function exposeService(appName: string): Promise<string> {
   return new Promise((resolve, reject) => {
