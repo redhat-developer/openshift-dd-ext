@@ -6,6 +6,7 @@ import { Box, Button, Card, CardContent, CardHeader, IconButton, Tooltip } from 
 import { Suspense, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import ConsoleButton from './components/consoleButton';
+import RegistryUrl from './components/registryUrl';
 import { ChangeContext } from './dialogs/changeContext';
 import { ChangeProject } from './dialogs/changeProject';
 import { LoginDialog } from './dialogs/login';
@@ -15,7 +16,7 @@ import { loadKubeContext } from './utils/OcUtils';
 import { openInBrowser } from './utils/UIUtils';
 
 export default function CurrentContext() {
-  const [loading, setLoading] = useState(true);
+  const [loading, ] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
   const [expanded, setExpanded] = useState(false);
   
@@ -123,6 +124,11 @@ export default function CurrentContext() {
         />
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
           <Box><b>Server:</b> <a onClick={openClusterPage} href="" style={styles.link}>{currentContext.clusterUrl}</a></Box>
+          <Box><b>Container Registry:</b> <span>
+            <Suspense fallback="...">
+              <RegistryUrl/>
+            </Suspense></span>
+          </Box>
           <Box><b>User:</b> {currentContext.user}</Box>
           <Box><b>Project:</b> {currentContext.project}
             {(currentContext !== UnknownKubeContext) && (

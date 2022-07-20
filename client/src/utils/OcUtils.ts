@@ -22,35 +22,68 @@ export function getEmbeddedOcPath() {
   return ocPathLinux;
 }
 
-export async function deployImage(dockerImage: string, listener: ExecListener): Promise<void> {
+export async function deployImage(dockerImage: string, listener?: ExecListener): Promise<void> {
   return new Promise((resolve, reject) => {
     ddClient.extension?.host?.cli.exec(
-      ocPath, ["new-app", "--image", dockerImage], {
+      ocPath, ["new-app", dockerImage], {
+      stream: {
+        onOutput(data) {
+          if (data.stdout) {
+            console.log(data.stdout);
+            listener?.onOutput(data.stdout);
+          }
+          if (data.stderr) {
+            console.error(data.stderr);
+            listener?.onError(data.stderr);
+          }
+        },
+        onError(error) {
+          console.error(error);
+          listener?.onError(error);
+        },
+        onClose(exitCode) {
+          console.log("oc new-app ended with exit code " + exitCode);
+          if (exitCode === 0) {
+            resolve();
+          } else {
+            reject("Failed to create a new app for " + dockerImage);
+          }
+        },
+        splitOutputLines: true
+      }
+    }
+    );
+  });
+}
+
+export async function registryLogin(listener?: ExecListener): Promise<string> {
+  let err = '';
+  let result = '';
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(
+      ocPath, ["registry", "login"], {
         stream: {
           onOutput(data) {
-            if (listener) {
-              if (data.stdout) {
-                console.log(data.stdout);
-                listener.onOutput(data.stdout);
-              } 
-              if (data.stderr) {
-                console.error(data.stderr);
-                listener.onError(data.stderr);
-              }
+            if (data.stdout) {
+              console.log(data.stdout);
+              listener?.onOutput(data.stdout);
+              result += data.stdout;
+            }
+            if (data.stderr) {
+              console.error(data.stderr);
+              listener?.onError(data.stderr);
+              err += data.stderr;
             }
           },
           onError(error) {
             console.error(error);
-            if (listener) {
-              listener.onError(error);
-            }
+            listener?.onError(error);
           },
           onClose(exitCode) {
-            console.log("oc new-app ended with exit code " + exitCode);
             if (exitCode === 0) {
-              resolve();
+              resolve(result);
             } else {
-              reject("Failed to create a new app for "+dockerImage);
+              reject("Failed to login to openshift container registry: " + err);
             }
           },
           splitOutputLines: true
@@ -58,7 +91,7 @@ export async function deployImage(dockerImage: string, listener: ExecListener): 
       }
     );
   });
-}
+};
 
 export async function exposeService(appName: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -271,6 +304,16 @@ export async function createProject(name: string): Promise<void> {
   })
 }
 
+export async function createImageStream(name: string): Promise<void> {
+  return ddClient.extension?.host?.cli.exec(ocPath, ['create', 'imagestream', name]).then((result) => {
+    if (result.stderr) {
+      console.error('stderr:', result.stderr);
+      throw new Error(result.stderr);
+    }
+    console.info(`Created imagestream '${name}'.`)
+  })
+}
+
 export async function listProjects(): Promise<string[]> {
   const result = ddClient.extension?.host?.cli.exec(
     ocPath,
@@ -308,6 +351,26 @@ export async function getOpenShiftConsoleURL(context: KubeContext): Promise<stri
         consoleURL = result.stdout.trim();
       }
       resolve(consoleURL);
+    }).catch((e) => {
+      handleError(reject, e);
+    });
+  });
+}
+
+export async function getOpenShiftRegistryURL(context: KubeContext): Promise<string | undefined> {
+  if (!context.clusterUrl) {
+    return undefined;
+  }
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ['registry', 'info']).then((result) => {
+      let registryURL: string | undefined;
+      if (result.stderr) {
+        console.error('stderr:', result.stderr);
+        reject(result.stderr);
+      } else {
+        registryURL = result.stdout.trim();
+      }
+      resolve(registryURL);
     }).catch((e) => {
       handleError(reject, e);
     });

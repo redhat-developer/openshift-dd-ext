@@ -7,6 +7,7 @@ import Header from './Header';
 import { useLocalState } from './hooks/useStorageState';
 import ImageSelector from './imageSelector';
 import { ISelectedImage } from './models/IDockerImage';
+import { KubeContext } from './models/KubeContext';
 import { Deployer, DeploymentMode } from './utils/Deployer';
 import { getMessage } from './utils/ErrorUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
@@ -18,7 +19,7 @@ const WAITING_ON_URL_TIMEOUT = 30000;
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
 
-  async function deploy(selectedImage: ISelectedImage, mode: DeploymentMode) {
+  async function deploy(selectedImage: ISelectedImage,  mode: DeploymentMode, context: KubeContext, registry?: string) {
     const imageName = selectedImage.name;
     let output = "";
     const deployer = new Deployer(mode, { 
@@ -43,7 +44,7 @@ export function App() {
       }
     });
     try {
-      deployer.deploy(imageName);
+      await deployer.deploy(imageName, context, registry);
     } catch (error) {
       toast.error(getMessage(error));
       setDeployResponse(output += `${getMessage(error)}\n`);

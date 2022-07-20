@@ -1,7 +1,7 @@
 import { atom, selector } from "recoil";
 import { UnknownKubeContext } from "../models/KubeContext";
 import { getMessage } from "../utils/ErrorUtils";
-import { getOpenShiftConsoleURL } from "../utils/OcUtils";
+import { getOpenShiftConsoleURL, getOpenShiftRegistryURL } from "../utils/OcUtils";
 
 export const currentContextState = atom({
   key: 'contextState',
@@ -10,6 +10,9 @@ export const currentContextState = atom({
 
 const CONSOLE_URLS = new Map<string, string>();
 const NO_CONSOLE = 'no-console';
+
+const REGISTRY_URLS = new Map<string, string>();
+const NO_REGISTRY = 'no-registry';
 
 export const currentDashboardState = selector({
   key: 'dashboardState',
@@ -32,5 +35,29 @@ export const currentDashboardState = selector({
     }
     CONSOLE_URLS.set(context.clusterUrl, (consoleUrl ? consoleUrl : NO_CONSOLE));
     return consoleUrl;
+  }
+});
+
+export const currentOpenShiftRegistryState = selector({
+  key: 'openShiftRegistryState',
+  get:  async ({get}) => {
+    const context = get(currentContextState);
+    if (context === UnknownKubeContext || !context.clusterUrl) {
+      return undefined;
+    }
+    let registryUrl:string|undefined;
+
+    if (REGISTRY_URLS.has(context.clusterUrl)) {
+      const url = REGISTRY_URLS.get(context.clusterUrl);
+      return (NO_REGISTRY === url) ? undefined : url;
+    }
+    try {
+      registryUrl = await getOpenShiftRegistryURL(context);
+      console.info(`Container registry url for ${context.clusterUrl}: ${registryUrl}`);
+    } catch (e) {
+      console.error(`Error finding container registry url for ${context.clusterUrl}: ${getMessage(e)}`);
+    }
+    CONSOLE_URLS.set(context.clusterUrl, (registryUrl ? registryUrl : NO_CONSOLE));
+    return registryUrl;
   }
 });

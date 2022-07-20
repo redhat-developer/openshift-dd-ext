@@ -1,11 +1,11 @@
 import { RefreshRounded } from "@mui/icons-material";
 import { Alert, Autocomplete, Button, Link, TextField, Tooltip } from "@mui/material";
 import { Box } from "@mui/system";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import DeployButton from "./components/deployButton";
 import { IDockerImage, ISelectedImage } from "./models/IDockerImage";
-import { UnknownKubeContext } from "./models/KubeContext";
+import { KubeContext, UnknownKubeContext } from "./models/KubeContext";
 import { currentContextState } from "./state/currentContextState";
 import { DeploymentMode } from "./utils/Deployer";
 import { getLocalImages } from "./utils/DockerUtils";
@@ -13,7 +13,7 @@ import { UNSET_VALUE } from "./utils/OcUtils";
 import { openInBrowser, toast } from "./utils/UIUtils";
 
 interface ImageSelectorProps {
-  onDeployClick?: (image: ISelectedImage, mode: number) => void;
+  onDeployClick?: (image: ISelectedImage, mode: number, context: KubeContext, registry?: string) => void;
 }
 
 interface ImageOption {
@@ -62,9 +62,9 @@ export default function ImageSelector(props?: ImageSelectorProps) {
     setLoading(true);
   }
 
-  const deploy = (mode: DeploymentMode): void => {
+  const deploy = (mode: DeploymentMode, context: KubeContext, registry?: string): void => {
     if (selectedImage && onDeployClick) {
-      onDeployClick(selectedImage, mode);
+      onDeployClick(selectedImage, mode, currentContext, registry);
     }
   }
 
@@ -126,11 +126,13 @@ export default function ImageSelector(props?: ImageSelectorProps) {
           </span>
         </Tooltip>
         {/* Move tooltip to the top-end, so it doesn't overlap the drop-down menu */}
+        <Suspense fallback={<Button size="large" variant="contained" style={{ marginLeft: '20px' }}>Loading options ...</Button>}>
         <Tooltip title="Deploy the selected image to OpenShift" placement='top-end'> 
           <span>
             <DeployButton onDeployClick={deploy} disabled={!selectedImage}/>
           </span>
         </Tooltip>
+        </Suspense>
       </Box>
       <Box marginBottom="15px">
         <Alert variant="filled" severity="info">
