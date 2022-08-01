@@ -1,11 +1,18 @@
-import { getLocalImageInspectionJson, pushImage } from "./DockerUtils";
+import { KubeContext } from "../models/KubeContext";
+import { buildTag, getLocalImageInspectionJson, pushImage, removeTag, tagImage } from "./DockerUtils";
+import { getMessage } from "./ErrorUtils";
 import ExecListener from "./execListener";
-import { deployImage, exposeService, getAppName, getProjectRoute } from "./OcUtils"
+import { createImageStream, deployImage, exposeService, getAppName, getProjectRoute, registryLogin } from "./OcUtils";
 
 export enum DeploymentMode {
     deploy = 0,
     pushToHubAndDeploy = 1,
     pushToOpenShiftAndDeploy = 2
+}
+
+interface DeploymentData {
+    image: string;
+    imageStream?: string;
 }
 
 export interface DeploymentListener {
@@ -30,7 +37,8 @@ export class Deployer {
         };
     }
 
-    public async deploy(image: string): Promise<void> {
+    public async deploy(image: string, context: KubeContext, registry?:string): Promise<void> {
+        let imageStream: string|undefined;
         switch (this.mode) {
             case DeploymentMode.deploy:
                 // Nothing to do at that point
@@ -39,16 +47,41 @@ export class Deployer {
                 await this.pushToHub(image);
                 break;
             case DeploymentMode.pushToOpenShiftAndDeploy:
-                await this.pushToOpenShift(image);
+                imageStream = await this.pushToOpenShift(image, context, registry);
                 break;
             default:
                 throw new Error("Unknown deployment mode");
         }
-        return this.deployToOpenShift(image);
+        return this.deployToOpenShift({image, imageStream});
     }
 
-    private pushToOpenShift(image: string): Promise<void>  {
-        throw new Error("Method not implemented.");
+    private async pushToOpenShift(image: string, context: KubeContext, registry?:string): Promise<string|undefined>  {
+        if (!registry) {
+            throw new Error("No OpenShift registry is available");
+        }
+        this.execListener.onOutput(`Logging to ${registry}...`);
+        await registryLogin(this.execListener);
+        
+        const imageStream = getAppName(image);
+        this.execListener.onOutput(`Creating image stream ${imageStream}...`);
+        try {
+            await createImageStream(imageStream);
+        } catch (error: any) {
+            if (getMessage(error).includes("already exists")) {
+                this.execListener.onOutput(`Image stream ${getAppName(image)} already exists, proceeding...`);
+            } else {
+                throw error;
+            }
+        }
+
+        const newTag = buildTag(registry, context.project!, image);
+        this.execListener.onOutput(`Tagging  ${newTag}...`);
+        await tagImage(image, newTag);
+        this.execListener.onOutput(`Pushing ${newTag} to remote registry...`);
+        await pushImage(newTag, this.execListener);
+        this.execListener.onOutput(`Removing tag ${newTag}`);
+        await removeTag(newTag);
+        return imageStream;
     }
 
     private async pushToHub(image: string): Promise<void> {
@@ -57,10 +90,12 @@ export class Deployer {
         this.listener?.onMessage(`Image ${image} pushed successfully`);
     }
 
-    private async deployToOpenShift(image: string): Promise<void> {
+    private async deployToOpenShift(deployment: DeploymentData): Promise<void> {
+        const image = deployment.image;
+        const imageStream = deployment.imageStream;
         this.listener?.onMessage(`Deploying ${image} to OpenShift...`);
         try {
-            await deployImage(image, this.execListener);
+            await deployImage(imageStream?imageStream:image, this.execListener);
         } catch (err) {
             this.listener?.onFailure(`Failed to deploy ${image}`, err);
             return;
