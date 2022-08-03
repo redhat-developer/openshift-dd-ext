@@ -25,6 +25,11 @@ export function ChangeContext(props: LoginDialogProps) {
 
   const ddClient = createDockerDesktopClient();
 
+  const selectAndClose = (value: string) => {
+    setSelectedContext(value);
+    handleChange();
+  }
+
   const handleCancel = () => {
     setOpen(false);
   }
@@ -46,9 +51,7 @@ export function ChangeContext(props: LoginDialogProps) {
       setKubeConfig(kubeConfig);
       setContexts(kubeConfig.contexts ? kubeConfig.contexts : [])
       setSelectedContext(kubeConfig['current-context']);
-      setTimeout(() => {
-        setLoading(false)
-      }, 1500);
+      setLoading(false)
     });
   }
 
@@ -63,7 +66,12 @@ export function ChangeContext(props: LoginDialogProps) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleChange} fullWidth={true}>
+      <Dialog open={open} onClose={handleChange} fullWidth={true} PaperProps={{
+        sx: {
+          minHeight: 570,
+          maxHeight: 570
+        }
+      }}>
         <DialogTitle>Change Context</DialogTitle>
         <DialogContent>
           {(loading) && (
@@ -87,7 +95,9 @@ export function ChangeContext(props: LoginDialogProps) {
                   return (contextUiData !== UnknownKubeContext) && (
                     <React.Fragment key={index}>
                       <ListItem>
-                        <ListItemButton alignItems="flex-start" selected={item.name === selectedContext} onClick={() => setSelectedContext(item.name)}>
+                        <ListItemButton alignItems="flex-start" selected={item.name === selectedContext} 
+                          onClick={() => setSelectedContext(item.name)}
+                          onDoubleClick={() => selectAndClose(item.name)}>
                           <ListItemText
                             primary={
                               <Typography

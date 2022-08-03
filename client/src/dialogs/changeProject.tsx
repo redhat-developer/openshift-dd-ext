@@ -1,15 +1,15 @@
-import * as React from 'react';
+import { createDockerDesktopClient } from '@docker/extension-api-client';
+import { Box, CircularProgress, Divider, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, CircularProgress, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Typography } from '@mui/material';
-import { loadKubeContext, loadProjectNames, setCurrentContextProject } from '../utils/OcUtils';
-import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { NewProjectDialog } from './newProject';
+import * as React from 'react';
 import { getMessage } from '../utils/ErrorUtils';
+import { loadKubeContext, loadProjectNames, setCurrentContextProject } from '../utils/OcUtils';
+import { NewProjectDialog } from './newProject';
 
 export interface ChangeProjectDialogProps {
   install: (showDialog: () => void) => void;
@@ -46,6 +46,11 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
     setSelectedProject(value);
   }
 
+  const selectAndClose = (value: string) => {
+    setSelectedProject(value);
+    handleChange();
+  }
+
   const handleOpen = () => {
     setLoading(true);
     setOpen(true)
@@ -54,9 +59,7 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
       setSelectedProject(context.project ? context.project : '');
       loadProjectNames().then((projects) => {
         setProjects(projects); 1
-        setTimeout(() => {
-          setLoading(false);
-        }, 1500);
+        setLoading(false);
       }).catch((error) => {
         console.error(error);
         ddClient.desktopUI.toast.error(getMessage(error));
@@ -87,7 +90,8 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
       <Dialog open={open} onClose={handleClose} fullWidth={true} PaperProps={{
         sx: {
           minWidth: 500,
-          minHeight: 570
+          minHeight: 570,
+          maxHeight: 570
         }
       }}>
         <DialogTitle>Change Project</DialogTitle>
@@ -111,7 +115,9 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
                 return (
                   <React.Fragment key={index}>
                     <ListItem>
-                      <ListItemButton alignItems="flex-start" selected={project === selectedProject} onClick={() => handleSelect(project)}>
+                      <ListItemButton alignItems="flex-start" selected={project === selectedProject} 
+                        onClick={() => handleSelect(project)} 
+                        onDoubleClick={() => selectAndClose(project)}>
                         <ListItemText
                           primary={
                             <Typography
