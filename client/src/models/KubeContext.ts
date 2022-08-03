@@ -5,6 +5,11 @@ export interface KubeContext {
   user?: string;
 }
 
+export interface KubeContextLinks {
+  dashboardUrl?: string;
+  tokenUrl?: string;
+}
+
 export const UnknownKubeContext: KubeContext = {
   name: undefined,
   project: undefined,

@@ -11,12 +11,14 @@ import { ChangeProject } from './dialogs/changeProject';
 import { LoginDialog } from './dialogs/login';
 import { UnknownKubeContext } from './models/KubeContext';
 import { currentContextState } from './state/currentContextState';
-import { loadKubeContext } from './utils/OcUtils';
+import { loginState } from './state/loginState';
+import { isLoggedIn, loadKubeContext } from './utils/OcUtils';
 import { openInBrowser } from './utils/UIUtils';
 
 export default function CurrentContext() {
-  const [loading, setLoading] = useState(true);
+  const [loading, ] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
+  const [, setLoggedIn] = useRecoilState(loginState);
   const [expanded, setExpanded] = useState(false);
   
   const handleLogin = () => {
@@ -51,13 +53,18 @@ export default function CurrentContext() {
     showChangeProjectDialog = showDialogHandler;
   }
 
-  async function loadContext(): Promise<void> {
+  async function loadContext(checkLoginState = true): Promise<void> {
     const context = await loadKubeContext();
     setCurrentContext(context);
+    if (checkLoginState) {
+      setLoggedIn(await isLoggedIn());
+    }
   }
 
   const onLogin = () => {
-    loadContext();
+    //No need to check login state, we just logged in!
+    loadContext(false);
+    setLoggedIn(true);
   }
 
   useEffect(() => {
@@ -116,9 +123,7 @@ export default function CurrentContext() {
               </Tooltip>
             </>
           }
-          title={
-            currentContext.name
-          }
+          title={currentContext.name}
           subheader={subHeader}
         />
         <CardContent hidden={!expanded} sx={{ paddingTop: "0px" }}>
