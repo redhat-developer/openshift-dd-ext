@@ -86,7 +86,7 @@ export default function CurrentContext() {
         <CardHeader
           action={
             <>
-              <Suspense fallback="...">
+              <Suspense fallback={<Tooltip title='Looking up console link' placement='bottom-end'><span>...</span></Tooltip>}>
                 <ConsoleButton />
               </Suspense>
               <Tooltip title='Login to an OpenShift cluster' placement='bottom-end'>
