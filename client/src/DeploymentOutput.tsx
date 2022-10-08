@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { useEffect, useRef } from "react";
 
 interface DeploymentOutputProps {
   deployResponse: string;
@@ -7,6 +8,16 @@ interface DeploymentOutputProps {
 export default function DeploymentOutput(props: DeploymentOutputProps) {
 
   const output = props?.deployResponse;
+  const textArea = useRef<HTMLTextAreaElement>(null);
+  
+  // After render, this scrolls the textArea to the bottom.
+  useEffect(() => {
+    if (textArea.current != null) {
+      const area = textArea.current;
+      area.scrollTop = area.scrollHeight;
+    }
+  }),
+    [];
 
   return (
     <Box
@@ -14,8 +25,9 @@ export default function DeploymentOutput(props: DeploymentOutputProps) {
       flexDirection="column"
       flexGrow={1}
       width="100%"
+      justify-content="flex-end" 
     >
-      <textarea style={{ height: '80%' }} value={output} readOnly />
+      <textarea ref={textArea} style={{ height: '80%' }} value={output} readOnly />
     </Box>
   );
 }
