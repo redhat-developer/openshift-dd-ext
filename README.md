@@ -8,9 +8,9 @@ You choose your target environment, the project you want to deploy to, you selec
 
 ![Image deployed to OpenShift](images/deploy-page-image-deployed.png)
 
-Capabilities provided at the moment:
+At the moment, the following capabilities are available:
 
-- **Detection of Kubernetes environments:** scan your defined kubeconfigs on your local environment and preselect your current default kubernetes environment. You can also easily switch from one environment to another one.
+- **Detection of Kubernetes environments:** scan your defined kubeconfigs in your local environment and preselect your current default kubernetes environment. You can also easily switch from one environment to another.
 - **Login into Clusters:** you can connect to a new Kubernetes environment not yet configured on your local workstation by directly connecting to it with the connection details.
 - **Listing of projects (namespace):** browse and select the project in which you want to deploy your application.
 - **Selection of container image:** pick and choose the container image you already have built and deployed on a container registry.
