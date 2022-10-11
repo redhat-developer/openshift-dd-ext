@@ -3,7 +3,7 @@ name: "Bug report \U0001F47E"
 about: Reporting bugs that help improve this project
 bug: ""
 title: ""
-labels: ""
+labels: "bug"
 assignees: ""
 
 ---
@@ -29,3 +29,4 @@ Add any other context about the problem here.
 
 **Extension info**
 Version: [e.g. 0.0.1]
+OS: [e.g. Windows 10/Windows 11/Linux/MacOS]
