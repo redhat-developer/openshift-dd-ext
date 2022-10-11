@@ -1,13 +1,14 @@
 ---
 name: "Feature request \U0001F91F\U0001F3FB"
 about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
+title: ""
+labels: ""
+assignees: ""
+enhancement: ""
 
 ---
 
-*Describe about the change you are requesting**
+**Describe about the change you are requesting**
 A short and clear description about the changes you want to make
 
 **Describe the solution you'd like**
