@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import { UnknownKubeContext } from "../models/KubeContext";
+import { KubeContextLinks, UnknownKubeContext } from "../models/KubeContext";
 import { getMessage } from "../utils/ErrorUtils";
 import { getOpenShiftConsoleURL, getOpenShiftRegistryURL } from "../utils/OcUtils";
 
@@ -8,33 +8,50 @@ export const currentContextState = atom({
   default: UnknownKubeContext,
 });
 
-const CONSOLE_URLS = new Map<string, string>();
-const NO_CONSOLE = 'no-console';
+const LINKS = new Map<string, KubeContextLinks>();
+const oauthMetadataEndpoint = '.well-known/oauth-authorization-server';
 
 const REGISTRY_URLS = new Map<string, string>();
 const NO_REGISTRY = 'no-registry';
 
-export const currentDashboardState = selector({
-  key: 'dashboardState',
+export const currentContextLinksState = selector({
+  key: 'contextLinksState',
   get:  async ({get}) => {
     const context = get(currentContextState);
     if (context === UnknownKubeContext || !context.clusterUrl) {
       return undefined;
     }
-    let consoleUrl:string|undefined;
-
-    if (CONSOLE_URLS.has(context.clusterUrl)) {
-      const url = CONSOLE_URLS.get(context.clusterUrl);
-      return (NO_CONSOLE === url) ? undefined : url;
+    if (LINKS.has(context.clusterUrl)) {
+      return LINKS.get(context.clusterUrl);
     }
+
+    let tokenUrl: string | undefined;
+    try {
+      const response = await fetch(`${context.clusterUrl}/${oauthMetadataEndpoint}`);
+      if (response.ok) {
+        const json = await response.json();
+        tokenUrl = json.token_endpoint;
+      }
+    } catch (e) {
+      console.error(`Error finding token url for ${context.clusterUrl}: ${getMessage(e)}`);
+    }
+
+    let consoleUrl: string | undefined;
     try {
       consoleUrl = await getOpenShiftConsoleURL(context);
       console.info(`Console url for ${context.clusterUrl}: ${consoleUrl}`);
     } catch (e) {
       console.error(`Error finding console url for ${context.clusterUrl}: ${getMessage(e)}`);
     }
-    CONSOLE_URLS.set(context.clusterUrl, (consoleUrl ? consoleUrl : NO_CONSOLE));
-    return consoleUrl;
+    
+    const links: KubeContextLinks = {
+      dashboardUrl: consoleUrl,
+      tokenUrl: tokenUrl?`${tokenUrl}/request`:undefined,
+    };
+
+    LINKS.set(context.clusterUrl, links);
+
+    return links;
   }
 });
 
@@ -57,7 +74,7 @@ export const currentOpenShiftRegistryState = selector({
     } catch (e) {
       console.error(`Error finding container registry url for ${context.clusterUrl}: ${getMessage(e)}`);
     }
-    CONSOLE_URLS.set(context.clusterUrl, (registryUrl ? registryUrl : NO_CONSOLE));
+    REGISTRY_URLS.set(context.clusterUrl, (registryUrl ? registryUrl : NO_REGISTRY));
     return registryUrl;
   }
 });

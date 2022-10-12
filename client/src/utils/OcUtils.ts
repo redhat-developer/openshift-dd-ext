@@ -1,5 +1,6 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { KubeContext, UnknownKubeContext } from "../models/KubeContext";
+import { getMessage } from "./ErrorUtils";
 import ExecListener from "./execListener";
 import { isMacOS, isWindows } from "./PlatformUtils";
 
@@ -129,6 +130,26 @@ export async function getProjectRoute(appName: string): Promise<string | undefin
     });
   });
 };
+
+export async function isLoggedIn(): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    ddClient.extension?.host?.cli.exec(ocPath, ["whoami"]).then(result => {
+      if (result.stderr) {
+        console.log("stderr:" + result.stderr);
+        resolve(false);
+      } else {
+        console.log("stdout:" + result.stdout);
+        resolve(true);
+      }
+    }).catch((e) => {
+      if (getMessage(e).toLowerCase().includes('(unauthorized)')) {
+        resolve(false);
+      } else {
+        reject(e);
+      }
+    });
+  });
+}
 
 export function getAppName(imageName: string) {
   const segments = imageName.split(':')[0].split('/');
@@ -369,6 +390,12 @@ export async function getOpenShiftRegistryURL(context: KubeContext): Promise<str
         reject(result.stderr);
       } else {
         registryURL = result.stdout.trim();
+        // TODO 'oc registry info' might return 'docker-registry.default.svc:5000' 
+        // for some remote clusters. Removing it for now
+        if (registryURL.includes('docker-registry.default.svc') && 
+            !context.clusterUrl!.includes('kubernetes.docker.internal')) {
+          registryURL = undefined;
+        }
       }
       resolve(registryURL);
     }).catch((e) => {

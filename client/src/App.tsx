@@ -1,13 +1,15 @@
 import { Box } from '@mui/material';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import { Banner, LoadingBanner } from './banner';
 import Logo from './components/logo';
 import CurrentContext from './ContextCard';
 import DeploymentOutput from './DeploymentOutput';
 import Header from './Header';
 import { useLocalState } from './hooks/useStorageState';
 import ImageSelector from './imageSelector';
-import { ISelectedImage } from './models/IDockerImage';
 import { KubeContext } from './models/KubeContext';
+import { selectedImageState } from './state/selectedImageState';
 import { Deployer, DeploymentMode } from './utils/Deployer';
 import { getMessage } from './utils/ErrorUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
@@ -18,8 +20,12 @@ const WAITING_ON_URL_TIMEOUT = 30000;
 
 export function App() {
   const [deployResponse, setDeployResponse] = useState("");
+  const selectedImage = useRecoilValue(selectedImageState);
 
-  async function deploy(selectedImage: ISelectedImage,  mode: DeploymentMode, context: KubeContext, registry?: string) {
+  async function deploy(mode: DeploymentMode, context: KubeContext, registry?: string) {
+    if (!selectedImage) {
+      return;
+    }
     const imageName = selectedImage.name;
     let output = "";
     const deployer = new Deployer(mode, { 
@@ -110,6 +116,9 @@ export function App() {
           <Header />
           <CurrentContext />
           <ImageSelector onDeployClick={deploy} />
+          <Suspense fallback={<LoadingBanner />}>
+            <Banner />
+          </Suspense>
           <DeploymentOutput deployResponse={deployResponse} />
         </>
       )}
