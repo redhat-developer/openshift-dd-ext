@@ -35,7 +35,6 @@
     "@types/react-test-renderer": "^18.0.0",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
-    "@types/testing-library__react": "^10.2.0",
     "@types/validator": "^13.7.2",
     "cors-anywhere": "0.4.4",
     "react-scripts": "5.0.1",
