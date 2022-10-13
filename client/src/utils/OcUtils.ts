@@ -264,9 +264,13 @@ export async function setCurrentContext(contextName: string): Promise<void> {
   });
 }
 
-export async function login(cluster: string, username: string, password: string): Promise<void> {
+export async function login(cluster: string, username: string, password: string, skipTlsVerify: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["login", cluster, '-u', username, '-p', password]).then(result => {
+    const args = ["login", cluster, '-u', username, '-p', password];
+    if (skipTlsVerify) {
+      args.push("--insecure-skip-tls-verify");
+    }
+    ddClient.extension?.host?.cli.exec(ocPath, args).then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -279,9 +283,13 @@ export async function login(cluster: string, username: string, password: string)
   });
 }
 
-export async function loginWithToken(cluster: string, token: string): Promise<void> {
+export async function loginWithToken(cluster: string, token: string, skipTlsVerify: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["login", cluster, '--token', token]).then(result => {
+    const args = ["login", cluster, '--token', token];
+    if (skipTlsVerify) {
+      args.push("--insecure-skip-tls-verify");
+    }
+    ddClient.extension?.host?.cli.exec(ocPath, args).then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);

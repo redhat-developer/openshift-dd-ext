@@ -2,11 +2,13 @@ import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Box, Tab, Tabs } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import validator from 'validator';
@@ -33,6 +35,7 @@ const DEFAULT_STATUS = { value: '', helperText: '', error: false };
 export function LoginDialog(props: LoginDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [cluster, setCluster] = React.useState<FieldState>(DEFAULT_STATUS);
+  const [skipTlsVerify, setSkipTlsVerify] = React.useState(false);
   const [username, setUsername] = React.useState<FieldState>(DEFAULT_STATUS);
   const [password, setPassword] = React.useState<FieldState>(DEFAULT_STATUS);
   const [token, setToken] = React.useState<FieldState>(DEFAULT_STATUS);;
@@ -75,9 +78,9 @@ export function LoginDialog(props: LoginDialogProps) {
     const host = cluster.value.split('://')[1];
     let loginPromise: Promise<void>;
     if (tab === TOKEN_TAB) {
-      loginPromise = loginWithToken(host, token.value);
+      loginPromise = loginWithToken(host, token.value, skipTlsVerify);
     } else {
-      loginPromise = login(host, username.value, password.value);
+      loginPromise = login(host, username.value, password.value, skipTlsVerify);
     }
     loginPromise.then(() => {
       ddClient.desktopUI.toast.success(`Sucessfully logged into cluster ${cluster.value}`);
@@ -220,6 +223,7 @@ export function LoginDialog(props: LoginDialogProps) {
               />
             )}
           />
+          <FormControlLabel control={<Checkbox checked={skipTlsVerify} onChange={(event, value) => setSkipTlsVerify(value)} />} label="Skip TLS Verify" />
           <Tabs value={tab} aria-label="Authentication options" onChange={handleTabChange}>
             <Tab label="Credentials" {...a11yProps(CREDENTIALS_TAB)} />
             <Tab label="Bearer Token" {...a11yProps(TOKEN_TAB)} />
