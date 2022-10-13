@@ -16,8 +16,7 @@ export default function DeploymentOutput(props: DeploymentOutputProps) {
       const area = textArea.current;
       area.scrollTop = area.scrollHeight;
     }
-  }),
-    [];
+  },[]);
 
   return (
     <Box
