@@ -1,15 +1,17 @@
-import * as React from 'react';
+import { createDockerDesktopClient } from '@docker/extension-api-client';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { createProject } from '../utils/OcUtils';
-import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { validateLength, validateResourcePattern } from '../utils/ValidationUtils';
+import TextField from '@mui/material/TextField';
+import * as React from 'react';
+import { useRecoilValue } from 'recoil';
+import { currentOcOptions } from '../state/currentOcOptionsState';
 import { getMessage } from '../utils/ErrorUtils';
+import { createProject } from '../utils/OcUtils';
+import { validateLength, validateResourcePattern } from '../utils/ValidationUtils';
 
 interface LoginDialogProps {
   existingProjects?: string[];
@@ -26,6 +28,7 @@ interface FieldState {
 const DEFAULT_STATUS = { value: '', helperText: '', error: false };
 
 export function NewProjectDialog(props: LoginDialogProps) {
+  const ocOptions = useRecoilValue(currentOcOptions);
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState<FieldState>(DEFAULT_STATUS);
 
@@ -57,7 +60,7 @@ export function NewProjectDialog(props: LoginDialogProps) {
   const ddClient = createDockerDesktopClient();
 
   const handleCreateProject = () => {
-    createProject(name.value).then(() => {
+    createProject(ocOptions, name.value).then(() => {
       ddClient.desktopUI.toast.success(`New Project '${name.value}' created.`);
       props.onCreate();
     }).catch((error) => {

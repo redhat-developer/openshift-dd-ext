@@ -1,5 +1,7 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
+import { ExecResult, ExecStreamOptions } from "@docker/extension-api-client-types/dist/v1";
 import { KubeContext, UnknownKubeContext } from "../models/KubeContext";
+import { OcOptions } from "../models/OcOptions";
 import ExecListener from "./execListener";
 import { isMacOS, isWindows } from "./PlatformUtils";
 
@@ -22,11 +24,10 @@ export function getEmbeddedOcPath() {
   return ocPathLinux;
 }
 
-export async function deployImage(dockerImage: string, listener?: ExecListener): Promise<void> {
+export async function deployImage(ocOptions: OcOptions, dockerImage: string, listener?: ExecListener): Promise<void> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(
-      ocPath, ["new-app", dockerImage], {
-      stream: {
+    ocStream(
+      ocOptions, ["new-app", dockerImage], {
         onOutput(data) {
           if (data.stdout) {
             console.log(data.stdout);
@@ -51,51 +52,48 @@ export async function deployImage(dockerImage: string, listener?: ExecListener):
         },
         splitOutputLines: true
       }
-    }
     );
   });
 }
 
-export async function registryLogin(listener?: ExecListener): Promise<string> {
+export async function registryLogin(ocOptions: OcOptions, listener?: ExecListener): Promise<string> {
   let err = '';
   let result = '';
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(
-      ocPath, ["registry", "login"], {
-        stream: {
-          onOutput(data) {
-            if (data.stdout) {
-              console.log(data.stdout);
-              listener?.onOutput(data.stdout);
-              result += data.stdout;
-            }
-            if (data.stderr) {
-              console.error(data.stderr);
-              listener?.onError(data.stderr);
-              err += data.stderr;
-            }
-          },
-          onError(error) {
-            console.error(error);
-            listener?.onError(error);
-          },
-          onClose(exitCode) {
-            if (exitCode === 0) {
-              resolve(result);
-            } else {
-              reject("Failed to login to openshift container registry: " + err);
-            }
-          },
-          splitOutputLines: true
-        }
+    ocStream(
+      ocOptions, ["registry", "login"], {
+        onOutput(data) {
+          if (data.stdout) {
+            console.log(data.stdout);
+            listener?.onOutput(data.stdout);
+            result += data.stdout;
+          }
+          if (data.stderr) {
+            console.error(data.stderr);
+            listener?.onError(data.stderr);
+            err += data.stderr;
+          }
+        },
+        onError(error) {
+          console.error(error);
+          listener?.onError(error);
+        },
+        onClose(exitCode) {
+          if (exitCode === 0) {
+            resolve(result);
+          } else {
+            reject("Failed to login to openshift container registry: " + err);
+          }
+        },
+        splitOutputLines: true
       }
     );
   });
 };
 
-export async function exposeService(appName: string): Promise<string> {
+export async function exposeService(ocOptions: OcOptions, appName: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["expose", "service/" + appName]).then(result => {
+    ocExecute(ocOptions, ["expose", "service/" + appName])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -109,9 +107,9 @@ export async function exposeService(appName: string): Promise<string> {
 };
 
 //TODO there must be a better way to get the route
-export async function getProjectRoute(appName: string): Promise<string | undefined> {
+export async function getProjectRoute(ocOptions: OcOptions, appName: string): Promise<string | undefined> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["describe", "route", appName]).then(result => {
+    ocExecute(ocOptions, ["describe", "route", appName])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -169,8 +167,8 @@ export function loadContextUiData(kubeConfig: any, contextName: string): KubeCon
 
 }
 
-export async function loadKubeContext(): Promise<KubeContext> {
-  const kubeConfig = await readKubeConfig();
+export async function loadKubeContext(ocOptions: OcOptions): Promise<KubeContext> {
+  const kubeConfig = await readKubeConfig(ocOptions);
   if (kubeConfig) {
     const currentContext = kubeConfig["current-context"];
     if (currentContext) {
@@ -180,9 +178,9 @@ export async function loadKubeContext(): Promise<KubeContext> {
   return UnknownKubeContext;
 }
 
-export async function readKubeConfig(): Promise<any> {
+export async function readKubeConfig(ocOptions: OcOptions): Promise<any> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["config", "view", "-o", "json"]).then(result => {
+    ocExecute(ocOptions, ["config", "view", "-o", "json"])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -196,9 +194,9 @@ export async function readKubeConfig(): Promise<any> {
   });
 }
 
-export async function loadProjectNames(): Promise<string[]> {
+export async function loadProjectNames(ocOptions: OcOptions): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["get", "projects", "-o", "json"]).then(result => {
+    ocExecute(ocOptions, ["get", "projects", "-o", "json"])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -212,15 +210,15 @@ export async function loadProjectNames(): Promise<string[]> {
   });
 }
 
-export async function loadServerUrls(kcp: any = undefined): Promise<string[]> {
-  const kc = kcp ? kcp : await readKubeConfig();
+export async function loadServerUrls(ocOptions: OcOptions, kcp: any = undefined): Promise<string[]> {
+  const kc = kcp ? kcp : await readKubeConfig(ocOptions);
   const clusters: string[] = kc.clusters.map((item: any) => item.cluster.server);
   return [... new Set(clusters)];
 }
 
-export async function setCurrentContextProject(projectName: string) {
+export async function setCurrentContextProject(ocOptions: OcOptions, projectName: string) {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["project", projectName]).then(result => {
+    ocExecute(ocOptions, ["project", projectName])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -233,9 +231,9 @@ export async function setCurrentContextProject(projectName: string) {
   });
 }
 
-export async function isOpenshift() {
+export async function isOpenshift(ocOptions: OcOptions) {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["api-versions"]).then(result => {
+    ocExecute(ocOptions, ["api-versions"])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -249,9 +247,9 @@ export async function isOpenshift() {
   });
 }
 
-export async function setCurrentContext(contextName: string): Promise<void> {
+export async function setCurrentContext(ocOptions: OcOptions, contextName: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ["config", "use-context", contextName]).then(result => {
+    ocExecute(ocOptions, ["config", "use-context", contextName])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -264,13 +262,9 @@ export async function setCurrentContext(contextName: string): Promise<void> {
   });
 }
 
-export async function login(cluster: string, username: string, password: string, skipTlsVerify: boolean = false): Promise<void> {
+export async function login(ocOptions: OcOptions, cluster: string, username: string, password: string, skipTlsVerify: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    const args = ["login", cluster, '-u', username, '-p', password];
-    if (skipTlsVerify) {
-      args.push("--insecure-skip-tls-verify");
-    }
-    ddClient.extension?.host?.cli.exec(ocPath, args).then(result => {
+    ocExecute(ocOptions, ["login", cluster, '-u', username, '-p', password])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -283,13 +277,9 @@ export async function login(cluster: string, username: string, password: string,
   });
 }
 
-export async function loginWithToken(cluster: string, token: string, skipTlsVerify: boolean = false): Promise<void> {
+export async function loginWithToken(ocOptions: OcOptions, cluster: string, token: string, skipTlsVerify: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    const args = ["login", cluster, '--token', token];
-    if (skipTlsVerify) {
-      args.push("--insecure-skip-tls-verify");
-    }
-    ddClient.extension?.host?.cli.exec(ocPath, args).then(result => {
+    ocExecute(ocOptions, ["login", cluster, '--token', token])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -302,8 +292,8 @@ export async function loginWithToken(cluster: string, token: string, skipTlsVeri
   });
 }
 
-export async function createProject(name: string): Promise<void> {
-  return ddClient.extension?.host?.cli.exec(ocPath, ['new-project', name]).then((result) => {
+export async function createProject(ocOptions: OcOptions, name: string): Promise<void> {
+  return ocExecute(ocOptions, ['new-project', name])?.then((result) => {
     if (result.stderr) {
       console.error('stderr:', result.stderr);
       throw new Error(result.stderr);
@@ -312,8 +302,8 @@ export async function createProject(name: string): Promise<void> {
   })
 }
 
-export async function createImageStream(name: string): Promise<void> {
-  return ddClient.extension?.host?.cli.exec(ocPath, ['create', 'imagestream', name]).then((result) => {
+export async function createImageStream(ocOptions: OcOptions, name: string): Promise<void> {
+  return ocExecute(ocOptions, ['create', 'imagestream', name])?.then((result) => {
     if (result.stderr) {
       console.error('stderr:', result.stderr);
       throw new Error(result.stderr);
@@ -322,11 +312,11 @@ export async function createImageStream(name: string): Promise<void> {
   })
 }
 
-export async function listProjects(): Promise<string[]> {
-  const result = ddClient.extension?.host?.cli.exec(
-    ocPath,
+export async function listProjects(ocOptions: OcOptions): Promise<string[]> {
+  const result = ocExecute(
+    ocOptions,
     ['get', 'projects', '-o', 'jsonpath="{range .items[*]}{.metadata.name}{\' \'}{range}"']
-  ).then((result) => {
+  )?.then((result) => {
     let projects: string[] = [];
     if (result.stderr) {
       console.error('stderr:', result.stderr);
@@ -339,7 +329,7 @@ export async function listProjects(): Promise<string[]> {
   return result ? result : []; // check for null required because of optional chaining
 }
 
-export async function getOpenShiftConsoleURL(context: KubeContext): Promise<string | undefined> {
+export async function getOpenShiftConsoleURL(ocOptions: OcOptions, context: KubeContext): Promise<string | undefined> {
 
   if (!context.clusterUrl) {
     return undefined;
@@ -347,10 +337,10 @@ export async function getOpenShiftConsoleURL(context: KubeContext): Promise<stri
 
   return new Promise((resolve, reject) => {
     //TODO: see if getting the console url from any context is doable
-    ddClient.extension?.host?.cli.exec(
-      ocPath,
+    ocExecute(
+      ocOptions,
       ['get', 'configmaps', 'console-public', '-n', 'openshift-config-managed', '-o', 'jsonpath="{.data.consoleURL}"']
-    ).then((result) => {
+    )?.then((result) => {
       let consoleURL: string | undefined;
       if (result.stderr) {
         console.error('stderr:', result.stderr);
@@ -365,12 +355,12 @@ export async function getOpenShiftConsoleURL(context: KubeContext): Promise<stri
   });
 }
 
-export async function getOpenShiftRegistryURL(context: KubeContext): Promise<string | undefined> {
+export async function getOpenShiftRegistryURL(ocOptions: OcOptions, context: KubeContext): Promise<string | undefined> {
   if (!context.clusterUrl) {
     return undefined;
   }
   return new Promise((resolve, reject) => {
-    ddClient.extension?.host?.cli.exec(ocPath, ['registry', 'info']).then((result) => {
+    ocExecute(ocOptions, ['registry', 'info'])?.then((result) => {
       let registryURL: string | undefined;
       if (result.stderr) {
         console.error('stderr:', result.stderr);
@@ -382,6 +372,22 @@ export async function getOpenShiftRegistryURL(context: KubeContext): Promise<str
     }).catch((e) => {
       handleError(reject, e);
     });
+  });
+}
+
+function ocExecute(ocOptions: OcOptions, args: string[]): Promise<ExecResult> | undefined {
+  if (ocOptions.skipTlsVerify) {
+    args = [...args, '--insecure-skip-tls-verify'];
+  }
+  return ddClient.extension?.host?.cli?.exec(ocPath, args);
+}
+
+function ocStream(ocOptions: OcOptions, args: string[], stream: ExecStreamOptions): void {
+  if (ocOptions.skipTlsVerify) {
+    args = [...args, '--insecure-skip-tls-verify'];
+  }
+  ddClient.extension?.host?.cli?.exec(ocPath, args, {
+    stream,
   });
 }
 

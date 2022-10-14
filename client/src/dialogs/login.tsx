@@ -13,12 +13,13 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import validator from 'validator';
 import DevSandBoxButton from '../components/devSandBoxButton';
+import { OcOptions } from '../models/OcOptions';
 import { getMessage } from '../utils/ErrorUtils';
 import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
-  onLogin: () => void;
+  onLogin: (ocOptions: OcOptions) => void;
 }
 
 interface FieldState {
@@ -75,16 +76,19 @@ export function LoginDialog(props: LoginDialogProps) {
   const ddClient = createDockerDesktopClient();
 
   const handleLogin = () => {
+    const ocOptions: OcOptions = {
+      skipTlsVerify,
+    };
     const host = cluster.value.split('://')[1];
     let loginPromise: Promise<void>;
     if (tab === TOKEN_TAB) {
-      loginPromise = loginWithToken(host, token.value, skipTlsVerify);
+      loginPromise = loginWithToken(ocOptions, host, token.value);
     } else {
-      loginPromise = login(host, username.value, password.value, skipTlsVerify);
+      loginPromise = login(ocOptions, host, username.value, password.value);
     }
     loginPromise.then(() => {
       ddClient.desktopUI.toast.success(`Sucessfully logged into cluster ${cluster.value}`);
-      props.onLogin();
+      props.onLogin(ocOptions);
     }).catch((error) => {
       console.error(error);
       ddClient.desktopUI.toast.error(getMessage(error));
@@ -95,7 +99,9 @@ export function LoginDialog(props: LoginDialogProps) {
 
   const handleOpen = () => {
     setOpen(true);
-    loadServerUrls().then((urls) => {
+    loadServerUrls({
+      skipTlsVerify,
+    }).then((urls) => {
       setServers(urls);
     })
   }

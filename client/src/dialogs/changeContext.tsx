@@ -7,7 +7,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import * as React from 'react';
+import { useRecoilValue } from 'recoil';
 import { UnknownKubeContext } from '../models/KubeContext';
+import { currentOcOptions } from '../state/currentOcOptionsState';
 import { loadContextUiData, readKubeConfig, setCurrentContext } from '../utils/OcUtils';
 
 interface LoginDialogProps {
@@ -17,6 +19,7 @@ interface LoginDialogProps {
 }
 
 export function ChangeContext(props: LoginDialogProps) {
+  const ocOptions = useRecoilValue(currentOcOptions);
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [kubeConfig, setKubeConfig] = React.useState();
@@ -36,7 +39,7 @@ export function ChangeContext(props: LoginDialogProps) {
 
   const handleChange = () => {
     setOpen(false);
-    setCurrentContext(selectedContext).catch((error) => {
+    setCurrentContext(ocOptions, selectedContext).catch((error) => {
       console.error(error);
       ddClient.desktopUI.toast.error('Setting current context failed.');
     }).then(() => {
@@ -47,7 +50,7 @@ export function ChangeContext(props: LoginDialogProps) {
   const handleOpen = () => {
     setLoading(true);
     setOpen(true)
-    readKubeConfig().then((kubeConfig) => {
+    readKubeConfig(ocOptions).then((kubeConfig) => {
       setKubeConfig(kubeConfig);
       setContexts(kubeConfig.contexts ? kubeConfig.contexts : [])
       setSelectedContext(kubeConfig['current-context']);
