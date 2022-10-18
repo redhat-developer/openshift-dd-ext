@@ -21,7 +21,7 @@ import { openInBrowser } from './utils/UIUtils';
 export default function CurrentContext() {
   const [loading, ] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
-  const [clusterUrlsToOcOptions, setClusterUrlToOcOptions] = useLocalState('ocOptions', {} as any);
+  const [contextNamesToOcOptions, setContextNamesToOcOptions] = useLocalState('ocOptions', {} as any);
   const [currentOcOptions, setCurrentOcOptions] = useRecoilState(currentOcOptionsState);
   const [expanded, setExpanded] = useState(false);
   
@@ -69,8 +69,8 @@ export default function CurrentContext() {
   }
 
   function loadOcOptions() {
-    if (currentContext.clusterUrl) {
-      const ocOptions: OcOptions = clusterUrlsToOcOptions[currentContext.clusterUrl];
+    if (currentContext.name) {
+      const ocOptions: OcOptions = contextNamesToOcOptions[currentContext.name];
       if (ocOptions) {
         setCurrentOcOptions(ocOptions);
       }
@@ -79,10 +79,10 @@ export default function CurrentContext() {
 
   const onLogin = (ocOptions: OcOptions) => {
     loadContext().then(() => {
-      if (currentContext.clusterUrl) {
-        setClusterUrlToOcOptions({
-          ...clusterUrlsToOcOptions,
-          [currentContext.clusterUrl]: ocOptions,
+      if (currentContext.name) {
+        setContextNamesToOcOptions({
+          ...contextNamesToOcOptions,
+          [currentContext.name]: ocOptions,
         });
       }
       loadOcOptions();
