@@ -2,7 +2,7 @@ import { atom, selector } from "recoil";
 import { UnknownKubeContext } from "../models/KubeContext";
 import { getMessage } from "../utils/ErrorUtils";
 import { getOpenShiftConsoleURL, getOpenShiftRegistryURL } from "../utils/OcUtils";
-import { currentOcOptions } from "./currentOcOptionsState";
+import { currentOcOptionsState } from "./currentOcOptionsState";
 
 export const currentContextState = atom({
   key: 'contextState',
@@ -18,7 +18,7 @@ const NO_REGISTRY = 'no-registry';
 export const currentDashboardState = selector({
   key: 'dashboardState',
   get:  async ({get}) => {
-    const ocOptions = get(currentOcOptions);
+    const ocOptions = get(currentOcOptionsState);
     const context = get(currentContextState);
     if (context === UnknownKubeContext || !context.clusterUrl) {
       return undefined;
@@ -43,7 +43,7 @@ export const currentDashboardState = selector({
 export const currentOpenShiftRegistryState = selector({
   key: 'openShiftRegistryState',
   get:  async ({get}) => {
-    const ocOptions = get(currentOcOptions);
+    const ocOptions = get(currentOcOptionsState);
     const context = get(currentContextState);
     if (context === UnknownKubeContext || !context.clusterUrl) {
       return undefined;

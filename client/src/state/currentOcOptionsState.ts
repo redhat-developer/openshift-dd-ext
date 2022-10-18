@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 import { OcOptions } from "../models/OcOptions";
 
-export const currentOcOptions = atom<OcOptions>({
+export const currentOcOptionsState = atom<OcOptions>({
   key: 'ocOptions',
   default: {
     skipTlsVerify: false,

@@ -13,14 +13,14 @@ import { LoginDialog } from './dialogs/login';
 import { UnknownKubeContext } from './models/KubeContext';
 import { OcOptions } from './models/OcOptions';
 import { currentContextState } from './state/currentContextState';
-import { currentOcOptions } from './state/currentOcOptionsState';
+import { currentOcOptionsState } from './state/currentOcOptionsState';
 import { loadKubeContext } from './utils/OcUtils';
 import { openInBrowser } from './utils/UIUtils';
 
 export default function CurrentContext() {
   const [loading, ] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
-  const [ocOptions, setOcOptions] = useRecoilState(currentOcOptions);
+  const [currentOcOptions, setCurrentOcOptions] = useRecoilState(currentOcOptionsState);
   const [expanded, setExpanded] = useState(false);
   
   const handleLogin = () => {
@@ -61,7 +61,7 @@ export default function CurrentContext() {
   }
 
   const onLogin = (ocOptions: OcOptions) => {
-    setOcOptions(ocOptions);
+    setCurrentOcOptions(ocOptions);
     loadContext();
   }
 
@@ -141,7 +141,7 @@ export default function CurrentContext() {
               </Tooltip>
             )}
           </Box>
-          <Box><b>Skip TLS Verify:</b> {ocOptions.skipTlsVerify}</Box>
+          <Box><b>Skip TLS Verify:</b> {currentOcOptions.skipTlsVerify}</Box>
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />

@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import { useRecoilValue } from 'recoil';
-import { currentOcOptions } from '../state/currentOcOptionsState';
+import { currentOcOptionsState } from '../state/currentOcOptionsState';
 import { getMessage } from '../utils/ErrorUtils';
 import { createProject } from '../utils/OcUtils';
 import { validateLength, validateResourcePattern } from '../utils/ValidationUtils';
@@ -28,7 +28,7 @@ interface FieldState {
 const DEFAULT_STATUS = { value: '', helperText: '', error: false };
 
 export function NewProjectDialog(props: LoginDialogProps) {
-  const ocOptions = useRecoilValue(currentOcOptions);
+  const currentOcOptions = useRecoilValue(currentOcOptionsState);
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState<FieldState>(DEFAULT_STATUS);
 
@@ -60,7 +60,7 @@ export function NewProjectDialog(props: LoginDialogProps) {
   const ddClient = createDockerDesktopClient();
 
   const handleCreateProject = () => {
-    createProject(ocOptions, name.value).then(() => {
+    createProject(currentOcOptions, name.value).then(() => {
       ddClient.desktopUI.toast.success(`New Project '${name.value}' created.`);
       props.onCreate();
     }).catch((error) => {

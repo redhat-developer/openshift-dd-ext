@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import * as React from 'react';
 import { useRecoilValue } from 'recoil';
 import { UnknownKubeContext } from '../models/KubeContext';
-import { currentOcOptions } from '../state/currentOcOptionsState';
+import { currentOcOptionsState } from '../state/currentOcOptionsState';
 import { loadContextUiData, readKubeConfig, setCurrentContext } from '../utils/OcUtils';
 
 interface LoginDialogProps {
@@ -19,7 +19,7 @@ interface LoginDialogProps {
 }
 
 export function ChangeContext(props: LoginDialogProps) {
-  const ocOptions = useRecoilValue(currentOcOptions);
+  const currentOcOptions = useRecoilValue(currentOcOptionsState);
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [kubeConfig, setKubeConfig] = React.useState();
@@ -39,7 +39,7 @@ export function ChangeContext(props: LoginDialogProps) {
 
   const handleChange = () => {
     setOpen(false);
-    setCurrentContext(ocOptions, selectedContext).catch((error) => {
+    setCurrentContext(currentOcOptions, selectedContext).catch((error) => {
       console.error(error);
       ddClient.desktopUI.toast.error('Setting current context failed.');
     }).then(() => {
