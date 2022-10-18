@@ -10,6 +10,7 @@ import RegistryUrl from './components/registryUrl';
 import { ChangeContext } from './dialogs/changeContext';
 import { ChangeProject } from './dialogs/changeProject';
 import { LoginDialog } from './dialogs/login';
+import { useLocalState } from './hooks/useStorageState';
 import { UnknownKubeContext } from './models/KubeContext';
 import { OcOptions } from './models/OcOptions';
 import { currentContextState } from './state/currentContextState';
@@ -20,6 +21,7 @@ import { openInBrowser } from './utils/UIUtils';
 export default function CurrentContext() {
   const [loading, ] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
+  const [clusterUrlsToOcOptions, setClusterUrlToOcOptions] = useLocalState('ocOptions', {} as any);
   const [currentOcOptions, setCurrentOcOptions] = useRecoilState(currentOcOptionsState);
   const [expanded, setExpanded] = useState(false);
   
@@ -55,19 +57,41 @@ export default function CurrentContext() {
     showChangeProjectDialog = showDialogHandler;
   }
 
+  function load() {
+    loadContext().then(() => {
+      loadOcOptions();
+    });
+  }
+
   async function loadContext(): Promise<void> {
     const context = await loadKubeContext();
     setCurrentContext(context);
   }
 
+  function loadOcOptions() {
+    if (currentContext.clusterUrl) {
+      const ocOptions: OcOptions = clusterUrlsToOcOptions[currentContext.clusterUrl];
+      if (ocOptions) {
+        setCurrentOcOptions(ocOptions);
+      }
+    }
+  }
+
   const onLogin = (ocOptions: OcOptions) => {
-    setCurrentOcOptions(ocOptions);
-    loadContext();
+    loadContext().then(() => {
+      if (currentContext.clusterUrl) {
+        setClusterUrlToOcOptions({
+          ...clusterUrlsToOcOptions,
+          [currentContext.clusterUrl]: ocOptions,
+        });
+      }
+      loadOcOptions();
+    });
   }
 
   useEffect(() => {
     if (loading) {
-      loadContext();
+      load();
     }
   }, []);
 
@@ -145,8 +169,8 @@ export default function CurrentContext() {
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
-      <ChangeContext install={installChangeContextDialog} onContextChange={loadContext} showLoginDialog={handleLogin} />
-      <ChangeProject install={installChangeProjectDialog} onProjectChange={loadContext} />
+      <ChangeContext install={installChangeContextDialog} onContextChange={load} showLoginDialog={handleLogin} />
+      <ChangeProject install={installChangeProjectDialog} onProjectChange={load} />
     </>
   );
 }
