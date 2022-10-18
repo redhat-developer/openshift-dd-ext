@@ -167,8 +167,8 @@ export function loadContextUiData(kubeConfig: any, contextName: string): KubeCon
 
 }
 
-export async function loadKubeContext(ocOptions: OcOptions): Promise<KubeContext> {
-  const kubeConfig = await readKubeConfig(ocOptions);
+export async function loadKubeContext(): Promise<KubeContext> {
+  const kubeConfig = await readKubeConfig();
   if (kubeConfig) {
     const currentContext = kubeConfig["current-context"];
     if (currentContext) {
@@ -178,9 +178,11 @@ export async function loadKubeContext(ocOptions: OcOptions): Promise<KubeContext
   return UnknownKubeContext;
 }
 
-export async function readKubeConfig(ocOptions: OcOptions): Promise<any> {
+export async function readKubeConfig(): Promise<any> {
   return new Promise((resolve, reject) => {
-    ocExecute(ocOptions, ["config", "view", "-o", "json"])?.then(result => {
+    ocExecute({
+      skipTlsVerify: false,
+    }, ["config", "view", "-o", "json"])?.then(result => {
       if (result.stderr) {
         console.log("stderr:" + result.stderr);
         reject(result.stderr);
@@ -210,8 +212,8 @@ export async function loadProjectNames(ocOptions: OcOptions): Promise<string[]> 
   });
 }
 
-export async function loadServerUrls(ocOptions: OcOptions, kcp: any = undefined): Promise<string[]> {
-  const kc = kcp ? kcp : await readKubeConfig(ocOptions);
+export async function loadServerUrls(kcp: any = undefined): Promise<string[]> {
+  const kc = kcp ? kcp : await readKubeConfig();
   const clusters: string[] = kc.clusters.map((item: any) => item.cluster.server);
   return [... new Set(clusters)];
 }

@@ -57,7 +57,7 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
   const handleOpen = () => {
     setLoading(true);
     setOpen(true)
-    loadKubeContext(ocOptions).then((context) => {
+    loadKubeContext().then((context) => {
       setCurrentProject(context.project ? context.project : '');
       setSelectedProject(context.project ? context.project : '');
       loadProjectNames(ocOptions).then((projects) => {

@@ -99,9 +99,7 @@ export function LoginDialog(props: LoginDialogProps) {
 
   const handleOpen = () => {
     setOpen(true);
-    loadServerUrls({
-      skipTlsVerify,
-    }).then((urls) => {
+    loadServerUrls().then((urls) => {
       setServers(urls);
     })
   }

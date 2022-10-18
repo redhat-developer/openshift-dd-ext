@@ -50,7 +50,7 @@ export function ChangeContext(props: LoginDialogProps) {
   const handleOpen = () => {
     setLoading(true);
     setOpen(true)
-    readKubeConfig(ocOptions).then((kubeConfig) => {
+    readKubeConfig().then((kubeConfig) => {
       setKubeConfig(kubeConfig);
       setContexts(kubeConfig.contexts ? kubeConfig.contexts : [])
       setSelectedContext(kubeConfig['current-context']);

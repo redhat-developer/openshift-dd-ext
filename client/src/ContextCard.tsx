@@ -56,7 +56,7 @@ export default function CurrentContext() {
   }
 
   async function loadContext(): Promise<void> {
-    const context = await loadKubeContext(ocOptions);
+    const context = await loadKubeContext();
     setCurrentContext(context);
   }
 
