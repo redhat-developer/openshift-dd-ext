@@ -1,4 +1,5 @@
 import { KubeContext } from "../models/KubeContext";
+import { OcOptions } from "../models/OcOptions";
 import { buildTag, getLocalImageInspectionJson, pushImage, removeTag, tagImage } from "./DockerUtils";
 import { getMessage } from "./ErrorUtils";
 import ExecListener from "./execListener";
@@ -26,7 +27,7 @@ export class Deployer {
     
     execListener: ExecListener;
 
-    constructor(private mode = DeploymentMode.deploy, private listener?: DeploymentListener){
+    constructor(private ocOptions: OcOptions, private mode = DeploymentMode.deploy, private listener?: DeploymentListener){
         this.execListener =  {
             onOutput: (line: string) => {
               this.listener?.onMessage(line);
@@ -60,12 +61,12 @@ export class Deployer {
             throw new Error("No OpenShift registry is available");
         }
         this.execListener.onOutput(`Logging to ${registry}...`);
-        await registryLogin(this.execListener);
+        await registryLogin(this.ocOptions, this.execListener);
         
         const imageStream = getAppName(image);
         this.execListener.onOutput(`Creating image stream ${imageStream}...`);
         try {
-            await createImageStream(imageStream);
+            await createImageStream(this.ocOptions, imageStream);
         } catch (error: any) {
             if (getMessage(error).includes("already exists")) {
                 this.execListener.onOutput(`Image stream ${getAppName(image)} already exists, proceeding...`);
@@ -95,7 +96,7 @@ export class Deployer {
         const imageStream = deployment.imageStream;
         this.listener?.onMessage(`Deploying ${image} to OpenShift...`);
         try {
-            await deployImage(imageStream?imageStream:image, this.execListener);
+            await deployImage(this.ocOptions, imageStream?imageStream:image, this.execListener);
         } catch (err) {
             this.listener?.onFailure(`Failed to deploy ${image}`, err);
             return;
@@ -111,14 +112,14 @@ export class Deployer {
         
         const appName = getAppName(image);
         try {
-            const result = await exposeService(appName);
+            const result = await exposeService(this.ocOptions, appName);
             this.listener?.onMessage(result);
         } catch (e) {
             this.listener?.onFailure(`Failed to expose ${appName} for ${image}`, e);
             // return; //should we bail out here?
         }
 
-        const route = await getProjectRoute(appName);
+        const route = await getProjectRoute(this.ocOptions, appName);
         if (route) {
             this.listener?.onMessage(`Application ${appName} exposed at ${route}`);
         } 

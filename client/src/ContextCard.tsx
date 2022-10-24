@@ -10,14 +10,19 @@ import RegistryUrl from './components/registryUrl';
 import { ChangeContext } from './dialogs/changeContext';
 import { ChangeProject } from './dialogs/changeProject';
 import { LoginDialog } from './dialogs/login';
+import { useLocalState } from './hooks/useStorageState';
 import { UnknownKubeContext } from './models/KubeContext';
+import { OcOptions } from './models/OcOptions';
 import { currentContextState } from './state/currentContextState';
+import { currentOcOptionsState } from './state/currentOcOptionsState';
 import { loadKubeContext } from './utils/OcUtils';
 import { openInBrowser } from './utils/UIUtils';
 
 export default function CurrentContext() {
   const [loading, ] = useState(true);
   const [currentContext, setCurrentContext] = useRecoilState(currentContextState);
+  const [contextNamesToOcOptions, setContextNamesToOcOptions] = useLocalState('ocOptions', {} as any);
+  const [currentOcOptions, setCurrentOcOptions] = useRecoilState(currentOcOptionsState);
   const [expanded, setExpanded] = useState(false);
   
   const handleLogin = () => {
@@ -52,18 +57,41 @@ export default function CurrentContext() {
     showChangeProjectDialog = showDialogHandler;
   }
 
+  function load() {
+    loadContext().then(() => {
+      loadOcOptions();
+    });
+  }
+
   async function loadContext(): Promise<void> {
     const context = await loadKubeContext();
     setCurrentContext(context);
   }
 
-  const onLogin = () => {
-    loadContext();
+  function loadOcOptions() {
+    if (currentContext.name) {
+      const ocOptions: OcOptions = contextNamesToOcOptions[currentContext.name];
+      if (ocOptions) {
+        setCurrentOcOptions(ocOptions);
+      }
+    }
+  }
+
+  const onLogin = (ocOptions: OcOptions) => {
+    loadContext().then(() => {
+      if (currentContext.name) {
+        setContextNamesToOcOptions({
+          ...contextNamesToOcOptions,
+          [currentContext.name]: ocOptions,
+        });
+      }
+      loadOcOptions();
+    });
   }
 
   useEffect(() => {
     if (loading) {
-      loadContext();
+      load();
     }
   }, []);
 
@@ -137,11 +165,12 @@ export default function CurrentContext() {
               </Tooltip>
             )}
           </Box>
+          <Box><b>Skip TLS Verify:</b> {currentOcOptions.skipTlsVerify.toString()}</Box>
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
-      <ChangeContext install={installChangeContextDialog} onContextChange={loadContext} showLoginDialog={handleLogin} />
-      <ChangeProject install={installChangeProjectDialog} onProjectChange={loadContext} />
+      <ChangeContext install={installChangeContextDialog} onContextChange={load} showLoginDialog={handleLogin} />
+      <ChangeProject install={installChangeProjectDialog} onProjectChange={load} />
     </>
   );
 }

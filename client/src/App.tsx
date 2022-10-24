@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import Logo from './components/logo';
 import CurrentContext from './ContextCard';
 import DeploymentOutput from './DeploymentOutput';
@@ -8,6 +9,7 @@ import { useLocalState } from './hooks/useStorageState';
 import ImageSelector from './imageSelector';
 import { ISelectedImage } from './models/IDockerImage';
 import { KubeContext } from './models/KubeContext';
+import { currentOcOptionsState } from './state/currentOcOptionsState';
 import { Deployer, DeploymentMode } from './utils/Deployer';
 import { getMessage } from './utils/ErrorUtils';
 import { openInBrowser, toast } from './utils/UIUtils';
@@ -17,12 +19,13 @@ import Welcome from './Welcome';
 const WAITING_ON_URL_TIMEOUT = 30000;
 
 export function App() {
+  const currentOcOptions = useRecoilValue(currentOcOptionsState);
   const [deployResponse, setDeployResponse] = useState("");
 
   async function deploy(selectedImage: ISelectedImage,  mode: DeploymentMode, context: KubeContext, registry?: string) {
     const imageName = selectedImage.name;
     let output = "";
-    const deployer = new Deployer(mode, { 
+    const deployer = new Deployer(currentOcOptions, mode, { 
       onMessage(message) {
         setDeployResponse(output += `${message}\n`);
       },

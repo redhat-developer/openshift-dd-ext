@@ -7,6 +7,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import * as React from 'react';
+import { useRecoilValue } from 'recoil';
+import { currentOcOptionsState } from '../state/currentOcOptionsState';
 import { getMessage } from '../utils/ErrorUtils';
 import { loadKubeContext, loadProjectNames, setCurrentContextProject } from '../utils/OcUtils';
 import { NewProjectDialog } from './newProject';
@@ -17,6 +19,7 @@ export interface ChangeProjectDialogProps {
 }
 
 export function ChangeProject(props: ChangeProjectDialogProps) {
+  const currentOcOptions = useRecoilValue(currentOcOptionsState);
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [changing, setChanging] = React.useState(false);
@@ -32,7 +35,7 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
 
   const handleChange = () => {
     setChanging(true);
-    setCurrentContextProject(selectedProject).catch((error) => {
+    setCurrentContextProject(currentOcOptions, selectedProject).catch((error) => {
       console.error(error);
       ddClient.desktopUI.toast.error('Setting current project for current context failed.');
     }).then(() => {
@@ -57,7 +60,7 @@ export function ChangeProject(props: ChangeProjectDialogProps) {
     loadKubeContext().then((context) => {
       setCurrentProject(context.project ? context.project : '');
       setSelectedProject(context.project ? context.project : '');
-      loadProjectNames().then((projects) => {
+      loadProjectNames(currentOcOptions).then((projects) => {
         setProjects(projects); 1
         setLoading(false);
       }).catch((error) => {

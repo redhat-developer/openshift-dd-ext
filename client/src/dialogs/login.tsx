@@ -2,21 +2,24 @@ import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Box, Tab, Tabs } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import validator from 'validator';
 import DevSandBoxButton from '../components/devSandBoxButton';
+import { OcOptions } from '../models/OcOptions';
 import { getMessage } from '../utils/ErrorUtils';
 import { loadServerUrls, login, loginWithToken } from '../utils/OcUtils';
 
 interface LoginDialogProps {
   install: (showDialog: () => void) => void;
-  onLogin: () => void;
+  onLogin: (ocOptions: OcOptions) => void;
 }
 
 interface FieldState {
@@ -33,6 +36,7 @@ const DEFAULT_STATUS = { value: '', helperText: '', error: false };
 export function LoginDialog(props: LoginDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [cluster, setCluster] = React.useState<FieldState>(DEFAULT_STATUS);
+  const [skipTlsVerify, setSkipTlsVerify] = React.useState(false);
   const [username, setUsername] = React.useState<FieldState>(DEFAULT_STATUS);
   const [password, setPassword] = React.useState<FieldState>(DEFAULT_STATUS);
   const [token, setToken] = React.useState<FieldState>(DEFAULT_STATUS);;
@@ -72,16 +76,19 @@ export function LoginDialog(props: LoginDialogProps) {
   const ddClient = createDockerDesktopClient();
 
   const handleLogin = () => {
+    const ocOptions: OcOptions = {
+      skipTlsVerify,
+    };
     const host = cluster.value.split('://')[1];
     let loginPromise: Promise<void>;
     if (tab === TOKEN_TAB) {
-      loginPromise = loginWithToken(host, token.value);
+      loginPromise = loginWithToken(ocOptions, host, token.value);
     } else {
-      loginPromise = login(host, username.value, password.value);
+      loginPromise = login(ocOptions, host, username.value, password.value);
     }
     loginPromise.then(() => {
       ddClient.desktopUI.toast.success(`Sucessfully logged into cluster ${cluster.value}`);
-      props.onLogin();
+      props.onLogin(ocOptions);
     }).catch((error) => {
       console.error(error);
       ddClient.desktopUI.toast.error(getMessage(error));
@@ -220,6 +227,7 @@ export function LoginDialog(props: LoginDialogProps) {
               />
             )}
           />
+          <FormControlLabel control={<Checkbox checked={skipTlsVerify} onChange={(event, value) => setSkipTlsVerify(value)} />} label="Skip TLS Verify" />
           <Tabs value={tab} aria-label="Authentication options" onChange={handleTabChange}>
             <Tab label="Credentials" {...a11yProps(CREDENTIALS_TAB)} />
             <Tab label="Bearer Token" {...a11yProps(TOKEN_TAB)} />
