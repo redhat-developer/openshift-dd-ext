@@ -60,7 +60,7 @@ export const currentOpenShiftRegistryState = selector({
     } catch (e) {
       console.error(`Error finding container registry url for ${context.clusterUrl}: ${getMessage(e)}`);
     }
-    CONSOLE_URLS.set(context.clusterUrl, (registryUrl ? registryUrl : NO_CONSOLE));
+    REGISTRY_URLS.set(context.clusterUrl, (registryUrl ? registryUrl : NO_CONSOLE));
     return registryUrl;
   }
 });
