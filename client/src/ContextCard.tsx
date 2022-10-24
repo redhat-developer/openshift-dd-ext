@@ -165,7 +165,7 @@ export default function CurrentContext() {
               </Tooltip>
             )}
           </Box>
-          <Box><b>Skip TLS Verify:</b> {currentOcOptions.skipTlsVerify}</Box>
+          <Box><b>Skip TLS Verify:</b> {currentOcOptions.skipTlsVerify.toString()}</Box>
         </CardContent>
       </Card >
       <LoginDialog install={installDialog} onLogin={onLogin} />
