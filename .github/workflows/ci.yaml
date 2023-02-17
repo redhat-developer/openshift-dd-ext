@@ -33,7 +33,7 @@ jobs:
 
       # Run tests
       - name: Run Tests
-        uses: GabrielBB/xvfb-action@v1.0
+        uses: GabrielBB/xvfb-action@fe2609f8182a9ed5aee7d53ff3ed04098a904df2 #v1.0
         with:
           run: yarn --cwd ./client test
 
